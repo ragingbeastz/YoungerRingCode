@@ -1,51 +1,79 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // Speed of the player
     public int speed = 20;
-    
-    // Reference to the Rigidbody2D component
+    public float jumpAmount = 10;
     private Rigidbody2D characterBody;
-    
-    // Velocity vector based on speed
     private Vector2 velocity;
-    
-    // Vector to store input movement
     private Vector2 inputMovement;
 
-    // Start is called before the first frame update
+    // Ground check variable
+    private bool isGrounded;
+    private string groundLayer = "Floor"; //Set Ground Layer
+
     void Start()
     {
-        // Initialize velocity with the speed value
         velocity = new Vector2(speed, speed);
-        
-        // Get the Rigidbody2D component attached to the GameObject
-        characterBody = GetComponent<Rigidbody2D>();   
+        characterBody = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
     void Update()
     {
-        // Get raw input from the horizontal and vertical axes
-        inputMovement = new Vector2 (
+        // Jumping
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            Debug.Log("Space key pressed: Jump amount: " + jumpAmount);
+            characterBody.AddForce(Vector2.up * jumpAmount, ForceMode2D.Impulse);
+        }
+    
+        // Moving Left
+        if (Input.GetKey(KeyCode.A))
+        {
+            Debug.Log("A key held");
+            characterBody.velocity = new Vector2(-speed, characterBody.velocity.y); // Move left
+        }
+    
+        // Moving Right
+        if (Input.GetKey(KeyCode.D))
+        {
+            Debug.Log("D key held");
+            characterBody.velocity = new Vector2(speed, characterBody.velocity.y); // Move right
+        }
+    
+        // Stop horizontal movement if neither A nor D is pressed
+        if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+        {
+            characterBody.velocity = new Vector2(0, characterBody.velocity.y); // Stop horizontal movement
+        }
+    
+        inputMovement = new Vector2(
             Input.GetAxisRaw("Horizontal"),
-            Input.GetAxisRaw("Vertical")
+            0
         );
     }
 
-    // FixedUpdate is called at a fixed interval and is used for physics calculations
-    private void FixedUpdate()
+    void OnCollisionEnter2D(Collision2D collision)
     {
-        // Calculate the change in position based on input, velocity, and time
-        Vector2 delta = inputMovement * velocity * Time.deltaTime;
-        
-        // Calculate the new position
-        Vector2 newPosition = characterBody.position + delta;
-        
-        // Move the Rigidbody2D to the new position
-        characterBody.MovePosition(newPosition);
+        // Check if the player collides with the ground layer
+        if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
+        {
+            isGrounded = true;
+            Debug.Log("Player is grounded");
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        // Check if the player exits collision with the ground layer
+        if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
+        {
+            isGrounded = false;
+            Debug.Log("Player is not grounded");
+        }
     }
 }
+
