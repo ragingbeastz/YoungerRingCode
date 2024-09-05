@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public int speed = 20;
-    public float jumpAmount = 10;
+    public int speed = 10;
+    public float jumpAmount = 5;
     private Rigidbody2D characterBody;
     private Vector2 velocity;
     private Vector2 inputMovement;
