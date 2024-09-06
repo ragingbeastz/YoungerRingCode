@@ -266,10 +266,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 60
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 50
+  m_GravityScale: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -293,8 +293,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c457c0e927047b9468c993db977e1a31, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 20
-  jumpDistance: 1000
+  speed: 10
+  jumpAmount: 5
 --- !u!70 &685591703
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -342,7 +342,7 @@ GameObject:
   - component: {fileID: 1237608817}
   - component: {fileID: 1237608816}
   - component: {fileID: 1237608818}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}

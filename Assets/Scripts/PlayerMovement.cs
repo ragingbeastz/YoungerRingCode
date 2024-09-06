@@ -13,16 +13,26 @@ public class PlayerMovement : MonoBehaviour
 
     // Ground check variable
     private bool isGrounded;
+    bool isLookingRight = true;
     private string groundLayer = "Floor"; //Set Ground Layer
 
     void Start()
     {
         velocity = new Vector2(speed, speed);
         characterBody = GetComponent<Rigidbody2D>();
+        
     }
 
     void Update()
     {
+        if (!isLookingRight){
+            GetComponent<SpriteRenderer>().flipX = true;
+        }
+
+        else if (isLookingRight){
+            GetComponent<SpriteRenderer>().flipX = false;
+        }
+
         // Jumping
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
@@ -34,6 +44,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.A))
         {
             Debug.Log("A key held");
+            isLookingRight = false;
             characterBody.velocity = new Vector2(-speed, characterBody.velocity.y); // Move left
         }
     
@@ -41,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKey(KeyCode.D))
         {
             Debug.Log("D key held");
+            isLookingRight = true;
             characterBody.velocity = new Vector2(speed, characterBody.velocity.y); // Move right
         }
     
