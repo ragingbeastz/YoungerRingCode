@@ -10,11 +10,13 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D characterBody;
     private Vector2 velocity;
     private Vector2 inputMovement;
+    public Animator animator;
 
     // Ground check variable
     private bool isGrounded;
-    bool isLookingRight = true;
+    private bool isLookingRight = true;
     private string groundLayer = "Floor"; //Set Ground Layer
+    private float yVelocity;
 
     void Start()
     {
@@ -25,6 +27,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        yVelocity = characterBody.velocity.y;
+        animator.SetFloat("yVelocity",yVelocity);
+
         if (!isLookingRight){
             GetComponent<SpriteRenderer>().flipX = true;
         }
@@ -45,6 +50,7 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log("A key held");
             isLookingRight = false;
+            animator.SetFloat("isMoving",1);
             characterBody.velocity = new Vector2(-speed, characterBody.velocity.y); // Move left
         }
     
@@ -53,12 +59,14 @@ public class PlayerMovement : MonoBehaviour
         {
             Debug.Log("D key held");
             isLookingRight = true;
+            animator.SetFloat("isMoving",1);
             characterBody.velocity = new Vector2(speed, characterBody.velocity.y); // Move right
         }
-    
+
         // Stop horizontal movement if neither A nor D is pressed
         if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
         {
+            animator.SetFloat("isMoving",0);
             characterBody.velocity = new Vector2(0, characterBody.velocity.y); // Stop horizontal movement
         }
     
@@ -74,6 +82,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
         {
             isGrounded = true;
+            animator.SetFloat("isJumping",0);
             Debug.Log("Player is grounded");
         }
     }
@@ -84,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
         {
             isGrounded = false;
+            animator.SetFloat("isJumping",1);
             Debug.Log("Player is not grounded");
         }
     }
