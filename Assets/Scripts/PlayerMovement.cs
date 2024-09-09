@@ -1,12 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Data.SqlTypes;
 using UnityEngine;
+using System.Collections;
+using System;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public int speed = 10;
+    public int speed = 8;
     public float jumpAmount = 5;
+    public float dodgeAmount = 5;
+    public float rollDuration = 1f; // Duration to wait before setting isRolling to 0
+
     private Rigidbody2D characterBody;
     private Vector2 velocity;
     private Vector2 inputMovement;
@@ -15,6 +17,8 @@ public class PlayerMovement : MonoBehaviour
     // Ground check variable
     private bool isGrounded;
     private bool isLookingRight = true;
+    private bool isRolling = false;
+    private bool onSecondAttack = false;
     private string groundLayer = "Floor"; //Set Ground Layer
     private float yVelocity;
 
@@ -22,58 +26,70 @@ public class PlayerMovement : MonoBehaviour
     {
         velocity = new Vector2(speed, speed);
         characterBody = GetComponent<Rigidbody2D>();
-        
+
     }
 
     void Update()
     {
         yVelocity = characterBody.velocity.y;
-        animator.SetFloat("yVelocity",yVelocity);
+        animator.SetFloat("yVelocity", yVelocity);
 
-        if (!isLookingRight){
-            GetComponent<SpriteRenderer>().flipX = true;
+        if (!isLookingRight)
+        {
+            transform.Find("Player").GetComponent<SpriteRenderer>().flipX = true;
         }
 
-        else if (isLookingRight){
-            GetComponent<SpriteRenderer>().flipX = false;
+        else if (isLookingRight)
+        {
+            transform.Find("Player").GetComponent<SpriteRenderer>().flipX = false;
         }
 
         // Jumping
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            Debug.Log("Space key pressed: Jump amount: " + jumpAmount);
             characterBody.AddForce(Vector2.up * jumpAmount, ForceMode2D.Impulse);
         }
-    
-        // Moving Left
-        if (Input.GetKey(KeyCode.A))
+
+        //Dodging
+        if (Input.GetKeyDown(KeyCode.J) && !isRolling && isGrounded) // Check if not already rolling
         {
-            Debug.Log("A key held");
+            Roll();
+        }
+
+        //Attacking
+        if (Input.GetKeyDown(KeyCode.J) && !isRolling) // Check if not rolling
+        {
+            if (!onSecondAttack){
+                Attack("first");
+            }
+            else{
+                Attack("second");
+                onSecondAttack = false;
+            }
+        }
+
+        //Moving Left
+        if (Input.GetKey(KeyCode.A) && !isRolling)
+        {
             isLookingRight = false;
-            animator.SetFloat("isMoving",1);
+            animator.SetFloat("isMoving", 1);
             characterBody.velocity = new Vector2(-speed, characterBody.velocity.y); // Move left
         }
-    
+
         // Moving Right
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.D) && !isRolling)
         {
-            Debug.Log("D key held");
             isLookingRight = true;
-            animator.SetFloat("isMoving",1);
+            animator.SetFloat("isMoving", 1);
             characterBody.velocity = new Vector2(speed, characterBody.velocity.y); // Move right
         }
 
-        // Stop horizontal movement if neither A nor D is pressed
-        if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D))
+        if ((Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.A)) && !isRolling)
         {
-            animator.SetFloat("isMoving",0);
-            characterBody.velocity = new Vector2(0, characterBody.velocity.y); // Stop horizontal movement
+            animator.SetFloat("isMoving", 0);
+            characterBody.velocity = new Vector2(0, characterBody.velocity.y); // Move right
         }
-    
-        inputMovement = new Vector2(
-            Input.GetAxisRaw("Horizontal"),
-            0
-        );
+
     }
 
     void OnCollisionEnter2D(Collision2D collision)
@@ -82,8 +98,7 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
         {
             isGrounded = true;
-            animator.SetFloat("isJumping",0);
-            Debug.Log("Player is grounded");
+            animator.SetFloat("isJumping", 0);
         }
     }
 
@@ -93,9 +108,48 @@ public class PlayerMovement : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
         {
             isGrounded = false;
-            animator.SetFloat("isJumping",1);
-            Debug.Log("Player is not grounded");
+            animator.SetFloat("isJumping", 1);
         }
+    }
+
+    void Roll()
+    {
+        isRolling = true; // Set rolling flag to true
+
+        if(animator.GetFloat("isMoving") != 0){
+            characterBody.velocity = new Vector2(0, characterBody.velocity.y);
+            animator.SetFloat("isMoving", 0);
+        }
+
+        if (isLookingRight)
+        {
+            characterBody.AddForce(Vector2.right * dodgeAmount, ForceMode2D.Impulse);
+        }
+        else
+        {
+            characterBody.AddForce(Vector2.left * dodgeAmount, ForceMode2D.Impulse);
+        }
+
+        animator.SetFloat("isRolling", 1);
+        StartCoroutine(ResetAnimation("isRolling", rollDuration));
+    }
+
+    void Attack(string state){
+         
+        if (state == "first"){
+
+        }
+        else{
+
+        }
+
+    }
+
+    IEnumerator ResetAnimation(string animation, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        animator.SetFloat(animation, 0);
+        isRolling = false;
     }
 }
 

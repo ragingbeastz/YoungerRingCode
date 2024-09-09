@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3cb2cc2d2c380bf4ab5717b36a3d33ec
+guid: 332a7f6b120dd7548bb8d08b3e49c1cd
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: _Fall_0
+      name: _JumpFallInbetween_0
       rect:
         serializedVersion: 2
-        x: 39
+        x: 0
         y: 0
-        width: 29
-        height: 38
+        width: 120
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,20 +124,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 698080bd129449241a5d2e29c18ddb85
-      internalID: 1164468854
+      spriteID: caf1f33e6da2af64789269610ab39e12
+      internalID: -1015788927
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: _Fall_1
+      name: _JumpFallInbetween_1
       rect:
         serializedVersion: 2
-        x: 159
+        x: 120
         y: 0
-        width: 29
-        height: 38
+        width: 120
+        height: 80
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -145,29 +145,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b2c7dd5f6285429489cea413cc592e6c
-      internalID: -495673275
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: _Fall_2
-      rect:
-        serializedVersion: 2
-        x: 279
-        y: 0
-        width: 29
-        height: 38
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      outline: []
-      physicsShape: []
-      tessellationDetail: 0
-      bones: []
-      spriteID: 573b546e7f7443245bc5237ed7dfb261
-      internalID: -871914046
+      spriteID: e0186c2eeb33a03418ceb6dd37fe392a
+      internalID: 638272806
       vertices: []
       indices: 
       edges: []
@@ -183,9 +162,8 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      _Fall_0: 1164468854
-      _Fall_1: -495673275
-      _Fall_2: -871914046
+      _JumpFallInbetween_0: -1015788927
+      _JumpFallInbetween_1: 638272806
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

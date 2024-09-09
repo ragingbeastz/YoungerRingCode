@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 7170ca7322964dd4f93ac6dffc58de4e
+guid: 16f68d63c27f6524491604b56f85ab4e
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,64 +110,127 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: _Jump_0
+      name: _Attack2_0
       rect:
         serializedVersion: 2
-        x: 44
+        x: 0
         y: 0
-        width: 25
-        height: 38
+        width: 120
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3ccfe5bd1930b2947a1734bebb6ff2d7
-      internalID: 1421701438
+      spriteID: e9fad4e81d1c07643842d092b67ed67f
+      internalID: 308036259
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: _Jump_1
+      name: _Attack2_1
       rect:
         serializedVersion: 2
-        x: 164
+        x: 120
         y: 0
-        width: 25
-        height: 38
+        width: 120
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bfbd20a23a112c147b2b05324f78a680
-      internalID: -648979733
+      spriteID: 687dc0276100a5a44b8c9d4f21c86773
+      internalID: 1011601870
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: _Jump_2
+      name: _Attack2_2
       rect:
         serializedVersion: 2
-        x: 284
+        x: 240
         y: 0
-        width: 25
-        height: 38
+        width: 120
+        height: 80
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 03efae32dbf7a1946a9825d634a79f48
-      internalID: -203827776
+      spriteID: ba3a81e0230f1f348afcb2aae2f528a2
+      internalID: -1069974605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: _Attack2_3
+      rect:
+        serializedVersion: 2
+        x: 360
+        y: 0
+        width: 120
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8eb1342266ff5194cb9ddbf3b93c6549
+      internalID: 2064158969
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: _Attack2_4
+      rect:
+        serializedVersion: 2
+        x: 480
+        y: 0
+        width: 120
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 9b38ebea4ef700942a85a98e2f704ca5
+      internalID: -500535279
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: _Attack2_5
+      rect:
+        serializedVersion: 2
+        x: 600
+        y: 0
+        width: 120
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 517e6af76eaaf1c45962c8fd029ad2b1
+      internalID: 85478566
       vertices: []
       indices: 
       edges: []
@@ -183,9 +246,12 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      _Jump_0: 1421701438
-      _Jump_1: -648979733
-      _Jump_2: -203827776
+      _Attack2_0: 308036259
+      _Attack2_1: 1011601870
+      _Attack2_2: -1069974605
+      _Attack2_3: 2064158969
+      _Attack2_4: -500535279
+      _Attack2_5: 85478566
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
