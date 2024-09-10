@@ -1323,6 +1323,7 @@ MonoBehaviour:
   jumpAmount: 5
   dodgeAmount: 5
   rollDuration: 1
+  doubleTapTime: 0.3
   animator: {fileID: 685591704}
 --- !u!50 &1720839895
 Rigidbody2D:

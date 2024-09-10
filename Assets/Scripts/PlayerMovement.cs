@@ -5,9 +5,10 @@ using System;
 public class PlayerMovement : MonoBehaviour
 {
     public int speed = 8;
-    public float jumpAmount = 5;
+    public float jumpAmount = 10;
     public float dodgeAmount = 5;
     public float rollDuration = 1f; // Duration to wait before setting isRolling to 0
+    public float doubleTapTime = 0.3f; 
 
     private Rigidbody2D characterBody;
     private Vector2 velocity;
@@ -18,9 +19,12 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     private bool isLookingRight = true;
     private bool isRolling = false;
-    private bool onSecondAttack = false;
+    private bool isAttack1;
+    private bool isAttacking = false;
+    private float lastAttackTime = 0f;
     private string groundLayer = "Floor"; //Set Ground Layer
     private float yVelocity;
+    
 
     void Start()
     {
@@ -57,15 +61,24 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Attacking
-        if (Input.GetKeyDown(KeyCode.J) && !isRolling) // Check if not rolling
+        if (Input.GetKeyDown(KeyCode.K) && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isRolling) // Check if not rolling
         {
-            if (!onSecondAttack){
-                Attack("first");
+            float currentAttackTime = Time.time;
+            float difference = currentAttackTime-lastAttackTime;
+            if (difference>=0.4f){
+                isAttack1 = true;
             }
+
+            if (isAttack1){
+                StartCoroutine(AllowForAnimation("isAttacking1", 0.4f));
+            }
+
             else{
-                Attack("second");
-                onSecondAttack = false;
+                StartCoroutine(AllowForAnimation("isAttacking2", 0.4f));
             }
+
+            isAttack1 = !isAttack1;
+            lastAttackTime = currentAttackTime;
         }
 
         //Moving Left
@@ -121,35 +134,27 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("isMoving", 0);
         }
 
-        if (isLookingRight)
+        if (!isRolling)
         {
-            characterBody.AddForce(Vector2.right * dodgeAmount, ForceMode2D.Impulse);
-        }
-        else
-        {
-            characterBody.AddForce(Vector2.left * dodgeAmount, ForceMode2D.Impulse);
+            if (isLookingRight)
+            {
+                characterBody.AddForce(Vector2.right * dodgeAmount, ForceMode2D.Impulse);
+            }
+            else
+            {
+                characterBody.AddForce(Vector2.left * dodgeAmount, ForceMode2D.Impulse);
+            }
         }
 
-        animator.SetFloat("isRolling", 1);
-        StartCoroutine(ResetAnimation("isRolling", rollDuration));
+        StartCoroutine(AllowForAnimation("isRolling", 0.9f));
+        isRolling = false;
     }
 
-    void Attack(string state){
-         
-        if (state == "first"){
-
-        }
-        else{
-
-        }
-
-    }
-
-    IEnumerator ResetAnimation(string animation, float duration)
+    IEnumerator AllowForAnimation(string animation, float duration)
     {
+        animator.SetFloat(animation, 1);
         yield return new WaitForSeconds(duration);
         animator.SetFloat(animation, 0);
-        isRolling = false;
     }
 }
 
