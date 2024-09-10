@@ -57,7 +57,26 @@ public class PlayerMovement : MonoBehaviour
         //Dodging
         if (Input.GetKeyDown(KeyCode.J) && !isRolling && isGrounded) // Check if not already rolling
         {
-            Roll();
+            isRolling = true;
+            if (animator.GetFloat("isMoving") != 0)
+            {
+                characterBody.velocity = new Vector2(0, characterBody.velocity.y);
+                animator.SetFloat("isMoving", 0);
+            }
+
+            if (isLookingRight)
+            {
+                characterBody.velocity = new Vector2(dodgeAmount, characterBody.velocity.y);
+            }
+            else
+            {
+                characterBody.velocity = new Vector2(-dodgeAmount, characterBody.velocity.y);
+            }
+
+
+            StartCoroutine(AllowForAnimation("isRolling", 0.9f));            
+            isRolling = false;  
+
         }
 
         //Attacking
@@ -123,31 +142,6 @@ public class PlayerMovement : MonoBehaviour
             isGrounded = false;
             animator.SetFloat("isJumping", 1);
         }
-    }
-
-    void Roll()
-    {
-        isRolling = true; // Set rolling flag to true
-
-        if(animator.GetFloat("isMoving") != 0){
-            characterBody.velocity = new Vector2(0, characterBody.velocity.y);
-            animator.SetFloat("isMoving", 0);
-        }
-
-        if (!isRolling)
-        {
-            if (isLookingRight)
-            {
-                characterBody.AddForce(Vector2.right * dodgeAmount, ForceMode2D.Impulse);
-            }
-            else
-            {
-                characterBody.AddForce(Vector2.left * dodgeAmount, ForceMode2D.Impulse);
-            }
-        }
-
-        StartCoroutine(AllowForAnimation("isRolling", 0.9f));
-        isRolling = false;
     }
 
     IEnumerator AllowForAnimation(string animation, float duration)
