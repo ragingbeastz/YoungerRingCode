@@ -1,12 +1,13 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using Unity.VisualScripting;
 
 public class PlayerMovement : MonoBehaviour
 {
     public int speed = 8;
     public float jumpAmount = 10;
-    public float dodgeAmount = 5;
+    public float dodgeAmount = 10;
     public float rollDuration = 1f; // Duration to wait before setting isRolling to 0
     public float doubleTapTime = 0.3f; 
 
@@ -22,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isAttack1;
     private bool isAttacking = false;
     private float lastAttackTime = 0f;
+    private float lastDodgeTime = 0f;
     private string groundLayer = "Floor"; //Set Ground Layer
     private float yVelocity;
     
@@ -38,6 +40,15 @@ public class PlayerMovement : MonoBehaviour
         if(animator.GetCurrentAnimatorStateInfo(0).IsName("player_Idle")){
             characterBody.velocity = new Vector2(0, characterBody.velocity.y);
         }
+
+        if(animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack2") || animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack")){
+            isAttacking = true;
+        }
+
+        else{
+            isAttacking = false;
+        }
+
         yVelocity = characterBody.velocity.y;
         animator.SetFloat("yVelocity", yVelocity);
 
@@ -52,15 +63,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Jumping
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && animator.GetFloat("isRolling") == 0 )
         {
             characterBody.AddForce(Vector2.up * jumpAmount, ForceMode2D.Impulse);
         }
 
         //Dodging
-        if (Input.GetKeyDown(KeyCode.J) && !isRolling && isGrounded) // Check if not already rolling
+        if (Input.GetKeyDown(KeyCode.J) && !isAttacking && !isRolling && isGrounded && (Time.time-lastDodgeTime) >= 0.7f)
         {
             isRolling = true;
+            float currentDodgeTime = Time.time;
 
             if (isLookingRight)
             {
@@ -75,23 +87,24 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(AllowForAnimation("isRolling", 0.9f));            
             isRolling = false;  
 
+            lastDodgeTime = currentDodgeTime;
         }
 
         //Attacking
-        if (Input.GetKeyDown(KeyCode.K) && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isRolling) // Check if not rolling
+        if (Input.GetKeyDown(KeyCode.K) && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isRolling && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack2")) // Check if not rolling
         {
             float currentAttackTime = Time.time;
             float difference = currentAttackTime-lastAttackTime;
-            if (difference>=0.6f){
+            if (difference>=0.4f){
                 isAttack1 = true;
             }
 
-            if (isAttack1){
-                StartCoroutine(AllowForAnimation("isAttacking1", 0.4f));
+            if (isAttack1 && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack")){
+                StartCoroutine(AllowForAnimation("isAttacking1", 0.3f));
             }
 
             else{
-                StartCoroutine(AllowForAnimation("isAttacking2", 0.4f));
+                StartCoroutine(AllowForAnimation("isAttacking2", 0.3f));
             }
 
             isAttack1 = !isAttack1;
@@ -99,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Moving Left
-        if (Input.GetKey(KeyCode.A) && !isRolling && animator.GetFloat("isRolling") == 0)
+        if (Input.GetKey(KeyCode.A) && animator.GetFloat("isRolling") == 0 && !isAttacking)
         {
             isLookingRight = false;
             animator.SetFloat("isMoving", 1);
@@ -107,17 +120,19 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Moving Right
-        if (Input.GetKey(KeyCode.D) && !isRolling && animator.GetFloat("isRolling") == 0)
+        if (Input.GetKey(KeyCode.D) && animator.GetFloat("isRolling") == 0 && !isAttacking)
         {
             isLookingRight = true;
             animator.SetFloat("isMoving", 1);
             characterBody.velocity = new Vector2(speed, characterBody.velocity.y); // Move right
         }
 
-        if ((Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.A)) && !isRolling)
+        if ((Input.GetKeyUp(KeyCode.D) || Input.GetKeyUp(KeyCode.A)))
         {
             animator.SetFloat("isMoving", 0);
-            characterBody.velocity = new Vector2(0, characterBody.velocity.y); // Move right
+            if(animator.GetFloat("isRolling") == 0){
+                characterBody.velocity = new Vector2(0, characterBody.velocity.y); // Move right
+            }
         }
 
     }
