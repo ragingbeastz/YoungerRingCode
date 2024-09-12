@@ -54,12 +54,12 @@ public class PlayerMovement : MonoBehaviour
 
         if (!isLookingRight)
         {
-            transform.Find("Player").GetComponent<SpriteRenderer>().flipX = true;
+            transform.Find("Character").GetComponent<SpriteRenderer>().flipX = true;
         }
 
         else if (isLookingRight)
         {
-            transform.Find("Player").GetComponent<SpriteRenderer>().flipX = false;
+            transform.Find("Character").GetComponent<SpriteRenderer>().flipX = false;
         }
 
         // Jumping
