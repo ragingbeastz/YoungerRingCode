@@ -482,7 +482,7 @@ GameObject:
   - component: {fileID: 685591705}
   - component: {fileID: 685591704}
   - component: {fileID: 685591703}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -536,8 +536,8 @@ CapsuleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.05, y: -0.2}
-  m_Size: {x: 0.2, y: 0.4}
+  m_Offset: {x: -0.049999997, y: -0.20000046}
+  m_Size: {x: 0.2, y: 0.40000093}
   m_Direction: 0
 --- !u!95 &685591704
 Animator:
@@ -1292,6 +1292,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 1720839892}
+  playerHealth: {fileID: 2147362519}
   speed: 8
   bounceAmount: 5
 --- !u!1 &1387905435
