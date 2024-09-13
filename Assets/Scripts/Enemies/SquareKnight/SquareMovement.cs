@@ -45,7 +45,6 @@ public class SquareMovement : MonoBehaviour
         }
 
         if ((thisMovement - lastMovement) >= 3f){
-            Debug.Log("Bounce");
             characterBody.AddForce(Vector2.up * bounceAmount, ForceMode2D.Impulse);
             if(direction == 1){
                 characterBody.AddForce(Vector2.right * bounceAmount, ForceMode2D.Impulse);

@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System;
 using Unity.VisualScripting;
+using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -15,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 velocity;
     private Vector2 inputMovement;
     public Animator animator;
+    public UnityEngine.UI.Image staminaBar;
 
     // Ground check variable
     private bool isGrounded;
@@ -37,10 +40,12 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        //Determine if still
         if(animator.GetCurrentAnimatorStateInfo(0).IsName("player_Idle")){
             characterBody.velocity = new Vector2(0, characterBody.velocity.y);
         }
 
+        //Determine if attacking
         if(animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack2") || animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack")){
             isAttacking = true;
         }
@@ -52,6 +57,7 @@ public class PlayerMovement : MonoBehaviour
         yVelocity = characterBody.velocity.y;
         animator.SetFloat("yVelocity", yVelocity);
 
+        //Change direction of player
         if (!isLookingRight)
         {
             transform.Find("Character").GetComponent<SpriteRenderer>().flipX = true;
@@ -63,17 +69,25 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Jumping
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && animator.GetFloat("isRolling") == 0 )
+        if (
+        Input.GetKeyDown(KeyCode.Space) 
+        && isGrounded 
+        && animator.GetFloat("isRolling") == 0 
+        && staminaBar.fillAmount >=0.2f)
         {
             characterBody.AddForce(Vector2.up * jumpAmount, ForceMode2D.Impulse);
+            staminaBar.fillAmount -= 0.2f;
         }
 
         //Dodging
-        if (Input.GetKeyDown(KeyCode.J) && !isAttacking && !isRolling && isGrounded && (Time.time-lastDodgeTime) >= 0.7f)
+        if (
+        Input.GetKeyDown(KeyCode.J) 
+        && !isAttacking 
+        && animator.GetFloat("isRolling") == 0 
+        && isGrounded 
+        && staminaBar.fillAmount >=0.3f)
         {
             isRolling = true;
-            float currentDodgeTime = Time.time;
-
             if (isLookingRight)
             {
                 characterBody.velocity = new Vector2(dodgeAmount, characterBody.velocity.y);
@@ -82,20 +96,25 @@ public class PlayerMovement : MonoBehaviour
             {
                 characterBody.velocity = new Vector2(-dodgeAmount, characterBody.velocity.y);
             }
-
-
+            staminaBar.fillAmount -= 0.3f;
             StartCoroutine(AllowForAnimation("isRolling", 0.9f));            
             isRolling = false;  
 
-            lastDodgeTime = currentDodgeTime;
         }
 
         //Attacking
-        if (Input.GetKeyDown(KeyCode.K) && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) && !isRolling && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack2")) // Check if not rolling
+        if (
+        Input.GetKeyDown(KeyCode.K) 
+        && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) 
+        && animator.GetFloat("isRolling") == 0 
+        && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack2")
+        && staminaBar.fillAmount >= 0.15f
+        && !isAttacking
+        && isGrounded) 
         {
             float currentAttackTime = Time.time;
             float difference = currentAttackTime-lastAttackTime;
-            if (difference>=0.4f){
+            if (difference>=0.6f){
                 isAttack1 = true;
             }
 
@@ -103,16 +122,17 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(AllowForAnimation("isAttacking1", 0.3f));
             }
 
-            else{
+            else {
                 StartCoroutine(AllowForAnimation("isAttacking2", 0.3f));
             }
-
+            
+            staminaBar.fillAmount -= 0.15f;
             isAttack1 = !isAttack1;
             lastAttackTime = currentAttackTime;
         }
 
         //Moving Left
-        if (Input.GetKey(KeyCode.A) && animator.GetFloat("isRolling") == 0 && !isAttacking)
+        if (Input.GetKey(KeyCode.A) && animator.GetFloat("isRolling") == 0)
         {
             isLookingRight = false;
             animator.SetFloat("isMoving", 1);
@@ -120,7 +140,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         // Moving Right
-        if (Input.GetKey(KeyCode.D) && animator.GetFloat("isRolling") == 0 && !isAttacking)
+        if (Input.GetKey(KeyCode.D) && animator.GetFloat("isRolling") == 0)
         {
             isLookingRight = true;
             animator.SetFloat("isMoving", 1);
