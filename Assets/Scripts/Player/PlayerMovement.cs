@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 inputMovement;
     public Animator animator;
     public UnityEngine.UI.Image staminaBar;
+    public UnityEngine.UI.Image healthBar;
 
     // Ground check variable
     private bool isGrounded;
@@ -26,6 +27,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isAttack1;
     private bool isAttacking = false;
     private float lastAttackTime = 0f;
+    private float lastHealTime = 0f;
     private float lastDodgeTime = 0f;
     private string groundLayer = "Floor"; //Set Ground Layer
     private float yVelocity;
@@ -73,11 +75,30 @@ public class PlayerMovement : MonoBehaviour
         Input.GetKeyDown(KeyCode.Space) 
         && isGrounded 
         && animator.GetFloat("isRolling") == 0 
-        && staminaBar.fillAmount >=0.2f)
+        && staminaBar.fillAmount >=0.2f
+        )
         {
             characterBody.AddForce(Vector2.up * jumpAmount, ForceMode2D.Impulse);
             staminaBar.fillAmount -= 0.2f;
         }
+
+        //Potion
+        if (
+        Input.GetKeyDown(KeyCode.L)
+        && animator.GetFloat("isRolling") == 0 
+        && !isAttacking
+        && isGrounded
+        && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)) 
+        && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Potion")
+        ){
+            float currentHealTime = Time.time;
+            if ((currentHealTime - lastHealTime) >= 1.1f ){
+                StartCoroutine(AllowForAnimation("isPotion", 1.1f));   
+                healthBar.fillAmount += 0.5f;
+                lastHealTime = currentHealTime;   
+            }
+            
+        } 
 
         //Dodging
         if (
