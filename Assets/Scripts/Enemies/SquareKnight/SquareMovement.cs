@@ -52,7 +52,6 @@ public class SquareMovement : MonoBehaviour
 
             // Debug.Log("Player X: " + PlayerX + "| Square X: " + SquareX + "| Difference: " + (PlayerX - SquareX));
             float difference = PlayerX - SquareX;
-            Debug.Log(difference); 
             if (difference <= 0.5 && difference >= -0.5){
                 touchingPlayer = true;
             }
@@ -60,7 +59,6 @@ public class SquareMovement : MonoBehaviour
                 touchingPlayer = false;
             }
 
-            Debug.Log(touchingPlayer);
         }
 
         if ((thisMovement - lastMovement) >= 3f){

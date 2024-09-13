@@ -92,8 +92,10 @@ public class PlayerMovement : MonoBehaviour
         && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Potion")
         ){
             float currentHealTime = Time.time;
+            Debug.Log(currentHealTime);
+            Debug.Log(lastHealTime);
             if ((currentHealTime - lastHealTime) >= 1.1f ){
-                StartCoroutine(AllowForAnimation("isPotion", 1.1f));   
+                StartCoroutine(AllowForAnimation("isPotion", 0.3f));
                 healthBar.fillAmount += 0.5f;
                 lastHealTime = currentHealTime;   
             }
