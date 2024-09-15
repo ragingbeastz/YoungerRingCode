@@ -701,7 +701,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   staminaBar: {fileID: 752068134}
-  regenRate: 0.1
+  regenRate: 0.05
 --- !u!1 &1090995421
 GameObject:
   m_ObjectHideFlags: 0
@@ -1292,7 +1292,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 1720839892}
-  playerHealth: {fileID: 2147362519}
   speed: 8
   bounceAmount: 5
 --- !u!1 &1387905435
@@ -2140,6 +2139,8 @@ MonoBehaviour:
   doubleTapTime: 0.3
   animator: {fileID: 685591704}
   staminaBar: {fileID: 752068134}
+  healthBar: {fileID: 2147362519}
+  spriteRenderer: {fileID: 685591705}
 --- !u!50 &1720839895
 Rigidbody2D:
   serializedVersion: 4
@@ -2178,6 +2179,7 @@ GameObject:
   - component: {fileID: 2147362518}
   - component: {fileID: 2147362520}
   - component: {fileID: 2147362519}
+  - component: {fileID: 2147362521}
   m_Layer: 5
   m_Name: HealthBar
   m_TagString: Untagged
@@ -2242,6 +2244,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2147362517}
   m_CullTransparentMesh: 1
+--- !u!114 &2147362521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2147362517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 574ff15885bc56440bce0bc74d69c468, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

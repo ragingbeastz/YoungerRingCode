@@ -10,13 +10,14 @@ public class SquareMovement : MonoBehaviour
     private Rigidbody2D characterBody;
     private Vector2 velocity;
     public GameObject Player;
-    public UnityEngine.UI.Image playerHealth;
     private float lastMovement = 0f;
     private float lastHit = 0f;
     private bool touchingPlayer = false;
     private int direction;
     public int speed = 8;
     public int bounceAmount = 5;
+
+    public int health = 100;
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +30,7 @@ public class SquareMovement : MonoBehaviour
     void Update()
     {
         float thisMovement = Time.time;
-        
+        PlayerMovement playerMovement = Player.GetComponent<PlayerMovement>();
         //Make Direction of travel towards player
         if (Player != null)
         {
@@ -59,9 +60,7 @@ public class SquareMovement : MonoBehaviour
                 touchingPlayer = false;
             }
 
-        }
-
-        if ((thisMovement - lastMovement) >= 3f){
+            if ((thisMovement - lastMovement) >= 3f){
             characterBody.AddForce(Vector2.up * bounceAmount, ForceMode2D.Impulse);
             if(direction == 1){
                 characterBody.AddForce(Vector2.right * bounceAmount, ForceMode2D.Impulse);
@@ -75,30 +74,31 @@ public class SquareMovement : MonoBehaviour
 
         if (thisMovement - lastHit >= 1f){
             if (touchingPlayer){
-                Debug.Log("Collision");
-                playerHealth.fillAmount -= 0.1f;
+                playerMovement.DamagePlayer(0.1f,SquarePosition);
                 lastHit = thisMovement;
             }
         }
+
+        }
+
+        
     }
 
-    // void OnCollisionEnter2D(Collision2D collision)
-    // {
-    //     // Check if the player collides with the ground layer
-    //     if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
-    //     {
-    //         touchingPlayer = true;
-    //     }
-    // }
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        Debug.Log("Enemy hit! Health remaining: " + health);
 
-    // void OnCollisionExit2D(Collision2D collision)
-    // {
-    //     // Check if the player exits collision with the ground layer
-    //     if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
-    //     {
-    //         touchingPlayer = false;
-    //     }
-    // }
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    void Die()
+    {
+        Destroy(gameObject); 
+    }
 }
 
 
