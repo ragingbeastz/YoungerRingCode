@@ -8,12 +8,15 @@ using System.Runtime.CompilerServices;
 
 public class PlayerMovement : MonoBehaviour
 {
+    // Player Stats
     public int speed = 8;
     public float jumpAmount = 10;
     public float dodgeAmount = 10;
-    public float rollDuration = 1f; // Duration to wait before setting isRolling to 0
+    public float rollDuration = 1f; 
     public float doubleTapTime = 0.3f;
+    public float attackRange = 5.0f;
 
+    // Components
     private Rigidbody2D characterBody;
     private Vector2 velocity;
     private Vector2 inputMovement;
@@ -24,7 +27,7 @@ public class PlayerMovement : MonoBehaviour
     Color originalColor;
     
 
-    // Ground check variable
+    // General Variables
     private bool isGrounded;
     private bool isLookingRight = true;
     private bool isRolling = false;
@@ -34,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
     private float lastHealTime = 0f;
     private float lastHitTime = 0f;
     private bool isKnockedBack = false;
-    private string groundLayer = "Floor"; //Set Ground Layer
+    private string groundLayer = "Floor"; 
     private float yVelocity;
 
 
@@ -149,7 +152,7 @@ public class PlayerMovement : MonoBehaviour
             }
 
             //Attacking
-            if (
+            if (//hello
             Input.GetKeyDown(KeyCode.K)
             && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
             && animator.GetFloat("isRolling") == 0
@@ -158,26 +161,35 @@ public class PlayerMovement : MonoBehaviour
             && !isAttacking
             && isGrounded)
             {
+                //Timing and Animation
                 float currentAttackTime = Time.time;
                 float difference = currentAttackTime - lastAttackTime;
                 if (difference >= 0.6f)
                 {
                     isAttack1 = true;
                 }
-
                 if (isAttack1 && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack"))
                 {
                     StartCoroutine(AllowForAnimation("isAttacking1", 0.3f));
                 }
-
                 else
                 {
                     StartCoroutine(AllowForAnimation("isAttacking2", 0.3f));
                 }
-
                 staminaBar.fillAmount -= 0.15f;
                 isAttack1 = !isAttack1;
                 lastAttackTime = currentAttackTime;
+
+                //Damage
+                Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange);
+                foreach (Collider2D enemy in hitEnemies)
+                    {
+                        if (enemy.CompareTag("Enemy")) // Ensure your enemy GameObjects have the "Enemy" tag
+                        {
+                            enemy.GetComponent<Enemy>().TakeDamage(30,transform.position);
+                        }
+                    }
+
             }
 
 
@@ -209,6 +221,12 @@ public class PlayerMovement : MonoBehaviour
 
 
 
+    }
+
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange); // Shows the attack radius
     }
 
     void OnCollisionEnter2D(Collision2D collision)

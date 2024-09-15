@@ -4,21 +4,20 @@ using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Experimental.XR.Interaction;
+using Unity.VisualScripting;
 
-public class SquareMovement : MonoBehaviour
+public class SquareMovement : Enemy
 {
     private Rigidbody2D characterBody;
     private Vector2 velocity;
     public GameObject Player;
+    public Animator animator;
     private float lastMovement = 0f;
     private float lastHit = 0f;
     private bool touchingPlayer = false;
     private int direction;
     public int speed = 8;
     public int bounceAmount = 5;
-
-    public int health = 100;
-
     // Start is called before the first frame update
     void Start()
     {
@@ -80,25 +79,24 @@ public class SquareMovement : MonoBehaviour
         }
 
         }
-
         
     }
 
-    public void TakeDamage(int damage)
+    override protected void Die()
     {
-        health -= damage;
-        Debug.Log("Enemy hit! Health remaining: " + health);
-
-        if (health <= 0)
-        {
-            Die();
-        }
+        StartCoroutine(ExampleCoroutine());
     }
 
-    void Die()
+    IEnumerator ExampleCoroutine()
     {
-        Destroy(gameObject); 
+        
+        animator.SetFloat("isDead", 1);
+        characterBody.velocity = new Vector2(0, 0);
+        yield return new WaitForSeconds(0.5f);
+        Destroy(gameObject);
     }
+
+
 }
 
 
