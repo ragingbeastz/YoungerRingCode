@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     
 
     // General Variables
+    private bool playerDead = false;
     private bool isGrounded;
     private bool isLookingRight = true;
     private bool isRolling = false;
@@ -91,7 +92,13 @@ public class PlayerMovement : MonoBehaviour
             transform.Find("Character").GetComponent<SpriteRenderer>().flipX = false;
         }
 
-        if (!isKnockedBack || animator.GetFloat("isRolling") == 1)
+        if (healthBar.fillAmount <= 0)
+        {
+            playerDead = true;
+            StartCoroutine(AllowForAnimationDeath());
+        }
+
+        if ((!isKnockedBack || animator.GetFloat("isRolling") == 1) && !playerDead)
         {
 
             // Jumping
@@ -256,38 +263,52 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat(animation, 0);
     }
 
+    IEnumerator AllowForAnimationDeath()
+    {
+        playerDead = true;
+        animator.SetFloat("isDead", 1);
+        yield return new WaitForSeconds(5f);
+        animator.SetFloat("isDead", 0);
+        // Destroy(gameObject);
+    }
+
 
     public void DamagePlayer(float amount, Vector2 EnemyPosition, float knockbackAmount = 5f)
     {
-        if (animator.GetFloat("isRolling") != 1)
+        if (animator.GetFloat("isRolling") != 1 || healthBar.fillAmount > 0)
         {
-            healthBar.fillAmount -= amount;
-            characterBody.velocity = new Vector2(0, 0);
-            isKnockedBack = true;
-            //If enemy is to the right of player
-            if (EnemyPosition.x >= transform.position.x)
+            if (healthBar.fillAmount > 0)
             {
-                if (!isLookingRight)
+                Debug.Log(healthBar.fillAmount);
+                healthBar.fillAmount -= amount;
+                characterBody.velocity = new Vector2(0, 0);
+                isKnockedBack = true;
+                //If enemy is to the right of player
+                if (EnemyPosition.x >= transform.position.x)
                 {
-                    isLookingRight = true;
+                    if (!isLookingRight)
+                    {
+                        isLookingRight = true;
+                    }
+                    characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
+                    characterBody.AddForce(Vector2.left * knockbackAmount, ForceMode2D.Impulse);
                 }
-                characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
-                characterBody.AddForce(Vector2.left * knockbackAmount, ForceMode2D.Impulse);
+
+                //If enemy is to the left of player
+                else
+                {
+                    if (isLookingRight)
+                    {
+                        isLookingRight = false;
+                    }
+                    characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
+                    characterBody.AddForce(Vector2.right * knockbackAmount, ForceMode2D.Impulse);
+                }
+
+                lastHitTime = Time.time;
+                animator.SetFloat("isHit", 1);
             }
 
-            //If enemy is to the left of player
-            else
-            {
-                if (isLookingRight)
-                {
-                    isLookingRight = false;
-                }
-                characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
-                characterBody.AddForce(Vector2.right * knockbackAmount, ForceMode2D.Impulse);
-            }
-
-            lastHitTime = Time.time;
-            animator.SetFloat("isHit", 1);
         }
 
     }

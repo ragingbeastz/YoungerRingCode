@@ -84,12 +84,11 @@ public class SquareMovement : Enemy
 
     override protected void Die()
     {
-        StartCoroutine(ExampleCoroutine());
+        StartCoroutine(WaitFor());
     }
 
-    IEnumerator ExampleCoroutine()
+    IEnumerator WaitFor()
     {
-        
         animator.SetFloat("isDead", 1);
         characterBody.velocity = new Vector2(0, 0);
         yield return new WaitForSeconds(0.5f);
