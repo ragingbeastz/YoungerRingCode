@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using System.Runtime.CompilerServices;
+using Unity.PlasticSCM.Editor.WebApi;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -23,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
     public Animator animator;
     public UnityEngine.UI.Image staminaBar;
     public UnityEngine.UI.Image healthBar;
+    public UnityEngine.UI.Image tempHealthBar;
     public SpriteRenderer spriteRenderer;
     Color originalColor;
     
@@ -37,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
     private float lastAttackTime = 0f;
     private float lastHealTime = 0f;
     private float lastHitTime = 0f;
+    private float lastTempHealthReduction = 0f;
     private bool isKnockedBack = false;
     private string groundLayer = "Floor"; 
     private float yVelocity;
@@ -91,6 +94,21 @@ public class PlayerMovement : MonoBehaviour
             animator.SetFloat("isLookingRight", 1);
             transform.Find("Character").GetComponent<SpriteRenderer>().flipX = false;
         }
+
+        //Managing Temp HealthBar
+        if (tempHealthBar.fillAmount >= healthBar.fillAmount){
+            float currentTime = Time.time;
+            if ((currentTime - lastHitTime) >= 1f){
+
+                if ((currentTime - lastTempHealthReduction) >= 0.05f){
+                    tempHealthBar.fillAmount -= 0.01f;
+                    lastTempHealthReduction = currentTime;
+                }
+            }
+
+            Debug.Log("Temp Health Bar: " + tempHealthBar.fillAmount);
+        }
+
 
         //Player Death
         if (healthBar.fillAmount <= 0 && isGrounded)
