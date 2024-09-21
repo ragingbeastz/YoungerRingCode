@@ -12,11 +12,11 @@ public class Enemy : MonoBehaviour
     private Color originalColor = Color.white;
 
 
+
     public virtual void TakeDamage(int damage, Vector3 playerPosition)
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         health -= damage;
-        Debug.Log("Enemy hit! Health remaining: " + health);
 
         if (health <= 0)
         {
@@ -50,17 +50,16 @@ public class Enemy : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        // Check if the player collides with the ground layer
         if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
         {
             isGrounded = true;
+            spriteRenderer = GetComponent<SpriteRenderer>();
             spriteRenderer.color = Color.white;
         }
     }
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        // Check if the player exits collision with the ground layer
         if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
         {
             isGrounded = false;

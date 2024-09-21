@@ -92,9 +92,11 @@ public class PlayerMovement : MonoBehaviour
             transform.Find("Character").GetComponent<SpriteRenderer>().flipX = false;
         }
 
-        if (healthBar.fillAmount <= 0)
+        //Player Death
+        if (healthBar.fillAmount <= 0 && isGrounded)
         {
             playerDead = true;
+            animator.SetFloat("isDead", 1);
             StartCoroutine(AllowForAnimationDeath());
         }
 
@@ -265,10 +267,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator AllowForAnimationDeath()
     {
-        playerDead = true;
-        animator.SetFloat("isDead", 1);
-        yield return new WaitForSeconds(5f);
-        animator.SetFloat("isDead", 0);
+        yield return new WaitForSeconds(0.3f);
         // Destroy(gameObject);
     }
 
