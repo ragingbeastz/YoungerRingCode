@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using System.Runtime.CompilerServices;
 using Unity.PlasticSCM.Editor.WebApi;
+using TMPro;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     public float rollDuration = 1f; 
     public float doubleTapTime = 0.3f;
     public float attackRange = 5.0f;
+    public int potionsLeft = 5;
 
     // Components
     private Rigidbody2D characterBody;
@@ -26,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     public UnityEngine.UI.Image healthBar;
     public UnityEngine.UI.Image tempHealthBar;
     public SpriteRenderer spriteRenderer;
+    public TextMeshProUGUI potionsLeftText;
     Color originalColor;
     
 
@@ -108,7 +111,6 @@ public class PlayerMovement : MonoBehaviour
 
         }
 
-
         //Player Death
         if (healthBar.fillAmount <= 0 && isGrounded)
         {
@@ -117,7 +119,19 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(AllowForAnimationDeath());
         }
 
-        if ((!isKnockedBack || animator.GetFloat("isRolling") == 1) && !playerDead)
+        //Player Potions
+        if (potionsLeft != 0)
+        {
+            potionsLeftText.text = "Potions Left: " + potionsLeft;
+        }
+
+        else
+        {
+            potionsLeftText.text = "No Potions Left";
+        }
+
+        //Player Movement
+        if ((!isKnockedBack || animator.GetFloat("isRolling") == 1) && !playerDead && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Potion"))
         {
 
             // Jumping
@@ -140,8 +154,11 @@ public class PlayerMovement : MonoBehaviour
             && isGrounded
             && !(Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D))
             && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Potion")
+            && potionsLeft != 0
+            && healthBar.fillAmount < 1
             )
             {
+                potionsLeft -= 1;
                 float currentHealTime = Time.time;
                 if ((currentHealTime - lastHealTime) >= 1.1f)
                 {
@@ -291,7 +308,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (animator.GetFloat("isRolling") != 1 && healthBar.fillAmount > 0)
         {
-            Debug.Log(animator.GetFloat("isRolling"));
             if (healthBar.fillAmount > 0)
             {
                 healthBar.fillAmount -= amount;
