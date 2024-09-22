@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Enemy : MonoBehaviour
 {
@@ -10,6 +11,43 @@ public class Enemy : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private string groundLayer = "Floor"; 
     private Color originalColor = Color.white;
+
+    //Health Bar
+    GameObject canvasGameObject;
+    GameObject healthBarGameObject;
+    GameObject healthBarRectangleGameObject;
+    Canvas canvas;
+    Image healthBarImage;
+
+
+    protected virtual void Start(){
+
+        canvasGameObject = new GameObject("EnemyCanvas");
+        canvas = canvasGameObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.WorldSpace;
+        canvasGameObject.transform.SetParent(transform);
+
+        canvasGameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 50); // Example size for the Canvas
+        canvasGameObject.transform.localPosition = new Vector3(0, 2, 0); // Position it above the enemy
+
+        healthBarGameObject = new GameObject("HealthBar");
+        healthBarGameObject.transform.SetParent(canvasGameObject.transform);
+
+        healthBarImage = healthBarGameObject.AddComponent<UnityEngine.UI.Image>();
+        healthBarImage.color = Color.red;
+
+        // Configure the RectTransform of the HealthBar
+        RectTransform healthBarRect = healthBarGameObject.GetComponent<RectTransform>();
+        healthBarRect.sizeDelta = new Vector2(1, 0.1f);  // Width 100, Height 10
+        healthBarRect.anchoredPosition = new Vector2(0,-0.3f);  // Set its position to the center of the canvas
+
+        Debug.Log(healthBarImage.color);
+
+    }
+
+    protected virtual void Update(){
+
+    }
 
 
 

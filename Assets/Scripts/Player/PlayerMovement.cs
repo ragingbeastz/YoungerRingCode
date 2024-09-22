@@ -106,7 +106,6 @@ public class PlayerMovement : MonoBehaviour
                 }
             }
 
-            Debug.Log("Temp Health Bar: " + tempHealthBar.fillAmount);
         }
 
 
@@ -144,8 +143,6 @@ public class PlayerMovement : MonoBehaviour
             )
             {
                 float currentHealTime = Time.time;
-                Debug.Log(currentHealTime);
-                Debug.Log(lastHealTime);
                 if ((currentHealTime - lastHealTime) >= 1.1f)
                 {
                     StartCoroutine(AllowForAnimation("isPotion", 0.3f));
@@ -296,7 +293,6 @@ public class PlayerMovement : MonoBehaviour
         {
             if (healthBar.fillAmount > 0)
             {
-                Debug.Log(healthBar.fillAmount);
                 healthBar.fillAmount -= amount;
                 characterBody.velocity = new Vector2(0, 0);
                 isKnockedBack = true;

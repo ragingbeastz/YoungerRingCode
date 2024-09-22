@@ -19,15 +19,20 @@ public class SquareMovement : Enemy
     public int speed = 8;
     public int bounceAmount = 5;
     // Start is called before the first frame update
-    void Start()
+    protected override void Start()
     {
+        base.Start(); // Call the parent class's Start() method
         velocity = new Vector2(speed, speed);
         characterBody = GetComponent<Rigidbody2D>();
+
+
     }
 
     // Update is called once per frame
-    void Update()
+    protected override void Update()
     {
+        base.Update(); // Call the parent class's Update() method
+
         float thisMovement = Time.time;
         PlayerMovement playerMovement = Player.GetComponent<PlayerMovement>();
         //Make Direction of travel towards player
