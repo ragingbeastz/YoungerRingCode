@@ -289,8 +289,9 @@ public class PlayerMovement : MonoBehaviour
 
     public void DamagePlayer(float amount, Vector2 EnemyPosition, float knockbackAmount = 5f)
     {
-        if (animator.GetFloat("isRolling") != 1 || healthBar.fillAmount > 0)
+        if (animator.GetFloat("isRolling") != 1 && healthBar.fillAmount > 0)
         {
+            Debug.Log(animator.GetFloat("isRolling"));
             if (healthBar.fillAmount > 0)
             {
                 healthBar.fillAmount -= amount;

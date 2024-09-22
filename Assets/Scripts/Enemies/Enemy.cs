@@ -102,11 +102,9 @@ public class Enemy : MonoBehaviour
 
 
         float healthPercentage = health / maxHealth;
-        Debug.Log(healthPercentage);
 
         healthBarImage.fillAmount = healthPercentage;
 
-        Debug.Log("fillAmount: " + healthBarImage.fillAmount);
 
 
 

@@ -1382,7 +1382,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Player: {fileID: 1720839892}
   animator: {fileID: 1340215208}
-  speed: 8
   bounceAmount: 5
 --- !u!95 &1340215208
 Animator:
