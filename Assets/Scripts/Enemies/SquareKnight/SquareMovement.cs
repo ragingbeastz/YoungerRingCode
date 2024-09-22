@@ -8,24 +8,18 @@ using Unity.VisualScripting;
 
 public class SquareMovement : Enemy
 {
-    private Rigidbody2D characterBody;
-    private Vector2 velocity;
     public GameObject Player;
     public Animator animator;
     private float lastMovement = 0f;
     private float lastHit = 0f;
     private bool touchingPlayer = false;
     private int direction;
-    public int speed = 8;
     public int bounceAmount = 5;
     // Start is called before the first frame update
     protected override void Start()
     {
         base.Start(); // Call the parent class's Start() method
-        velocity = new Vector2(speed, speed);
-        characterBody = GetComponent<Rigidbody2D>();
-
-
+        speed = 8;
     }
 
     // Update is called once per frame
