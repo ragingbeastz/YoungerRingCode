@@ -38,8 +38,8 @@ public class Enemy : MonoBehaviour
 
         // Configure the RectTransform of the HealthBar
         RectTransform healthBarRect = healthBarGameObject.GetComponent<RectTransform>();
-        healthBarRect.sizeDelta = new Vector2(1, 0.1f);  // Width 100, Height 10
-        healthBarRect.anchoredPosition = new Vector2(0,-0.3f);  // Set its position to the center of the canvas
+        healthBarRect.sizeDelta = new Vector2(1.5f, 0.1f);  // Width 100, Height 10
+        healthBarRect.anchoredPosition = new Vector2(0,-1f);  // Set its position to the center of the canvas
 
         Debug.Log(healthBarImage.color);
 
