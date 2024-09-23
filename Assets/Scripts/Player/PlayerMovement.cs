@@ -23,6 +23,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D characterBody;
     private Vector2 velocity;
     private Vector2 inputMovement;
+    private AudioSource soundManager;
     public Animator animator;
     public UnityEngine.UI.Image staminaBar;
     public UnityEngine.UI.Image healthBar;
@@ -31,6 +32,15 @@ public class PlayerMovement : MonoBehaviour
     public TextMeshProUGUI potionsLeftText;
     Color originalColor;
     
+    //Sounds
+    public AudioClip audio_Hurt;  
+    public AudioClip audio_Jump;  
+    public AudioClip audio_Land;  
+    public AudioClip audio_Running;  
+    public AudioClip audio_Roll;  
+    public AudioClip audio_Potion;
+    public AudioClip audio_SwordHit1;  
+    public AudioClip audio_SwordHit2;  
 
     // General Variables
     private bool playerDead = false;
@@ -52,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
     {
         velocity = new Vector2(speed, speed);
         characterBody = GetComponent<Rigidbody2D>();
+        soundManager = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -61,6 +72,12 @@ public class PlayerMovement : MonoBehaviour
         {
             characterBody.velocity = new Vector2(0, characterBody.velocity.y);
             animator.SetFloat("isMoving", 0);
+        }
+
+        //Stop Sound if Idle
+        if (characterBody.velocity == Vector2.zero && animator.GetCurrentAnimatorStateInfo(0).IsName("player_Idle"))
+        {
+            soundManager.Stop();
         }
 
         //Determine if attacking
@@ -142,6 +159,8 @@ public class PlayerMovement : MonoBehaviour
             && staminaBar.fillAmount >= 0.2f
             )
             {
+                soundManager.Stop();
+                soundManager.PlayOneShot(audio_Jump);
                 characterBody.AddForce(Vector2.up * jumpAmount, ForceMode2D.Impulse);
                 staminaBar.fillAmount -= 0.2f;
             }
@@ -158,7 +177,9 @@ public class PlayerMovement : MonoBehaviour
             && healthBar.fillAmount < 1
             )
             {
+                soundManager.Stop();
                 potionsLeft -= 1;
+                soundManager.PlayOneShot(audio_Potion);
                 float currentHealTime = Time.time;
                 if ((currentHealTime - lastHealTime) >= 1.1f)
                 {
@@ -177,7 +198,9 @@ public class PlayerMovement : MonoBehaviour
             && isGrounded
             && staminaBar.fillAmount >= 0.3f)
             {
+                soundManager.Stop();
                 isRolling = true;
+                soundManager.PlayOneShot(audio_Roll);
                 if (isLookingRight)
                 {
                     characterBody.velocity = new Vector2(dodgeAmount, characterBody.velocity.y);
@@ -202,6 +225,7 @@ public class PlayerMovement : MonoBehaviour
             && !isAttacking
             && isGrounded)
             {
+                soundManager.Stop();
                 //Timing and Animation
                 float currentAttackTime = Time.time;
                 float difference = currentAttackTime - lastAttackTime;
@@ -211,10 +235,12 @@ public class PlayerMovement : MonoBehaviour
                 }
                 if (isAttack1 && !animator.GetCurrentAnimatorStateInfo(0).IsName("player_Attack"))
                 {
+                    soundManager.PlayOneShot(audio_SwordHit2);
                     StartCoroutine(AllowForAnimation("isAttacking1", 0.3f));
                 }
                 else
                 {
+                    soundManager.PlayOneShot(audio_SwordHit2);
                     StartCoroutine(AllowForAnimation("isAttacking2", 0.3f));
                 }
                 staminaBar.fillAmount -= 0.15f;
@@ -237,6 +263,9 @@ public class PlayerMovement : MonoBehaviour
             //Moving Left
             if (Input.GetKey(KeyCode.A) && animator.GetFloat("isRolling") == 0)
             {
+                if (isGrounded && soundManager.isPlaying == false){
+                    soundManager.PlayOneShot(audio_Running);
+                }
                 isLookingRight = false;
                 animator.SetFloat("isMoving", 1);
                 characterBody.velocity = new Vector2(-speed, characterBody.velocity.y); // Move left
@@ -245,6 +274,9 @@ public class PlayerMovement : MonoBehaviour
             // Moving Right
             if (Input.GetKey(KeyCode.D) && animator.GetFloat("isRolling") == 0)
             {
+                if (isGrounded && soundManager.isPlaying == false){
+                    soundManager.PlayOneShot(audio_Running);
+                }
                 isLookingRight = true;
                 animator.SetFloat("isMoving", 1);
                 characterBody.velocity = new Vector2(speed, characterBody.velocity.y); // Move right
@@ -308,6 +340,8 @@ public class PlayerMovement : MonoBehaviour
     {
         if (animator.GetFloat("isRolling") != 1 && healthBar.fillAmount > 0)
         {
+            soundManager.Stop();
+            soundManager.PlayOneShot(audio_Hurt);
             if (healthBar.fillAmount > 0)
             {
                 healthBar.fillAmount -= amount;
@@ -340,6 +374,11 @@ public class PlayerMovement : MonoBehaviour
 
         }
 
+    }
+
+    void PlaySound(AudioClip clip)
+    {
+        soundManager.PlayOneShot(clip);
     }
 
 }

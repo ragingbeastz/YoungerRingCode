@@ -2851,6 +2851,14 @@ MonoBehaviour:
   tempHealthBar: {fileID: 1240101689}
   spriteRenderer: {fileID: 685591705}
   potionsLeftText: {fileID: 1058232302}
+  audio_Hurt: {fileID: 8300000, guid: fc6d3d09e284d4449b31be5ed0c6accd, type: 3}
+  audio_Jump: {fileID: 8300000, guid: 1b62c1f52fc19d143b9758279731b5d4, type: 3}
+  audio_Land: {fileID: 8300000, guid: 4400ed3a00e0ece44b6970441630d768, type: 3}
+  audio_Running: {fileID: 8300000, guid: 9f26a9ff48b1cc946bb1032823190fe9, type: 3}
+  audio_Roll: {fileID: 8300000, guid: 6efaae020c395ac44b0ca58427fff715, type: 3}
+  audio_Potion: {fileID: 8300000, guid: 166541c8e573e954b8a33d2cddbdea84, type: 3}
+  audio_SwordHit1: {fileID: 8300000, guid: f684845500e1b1f4380b37a8d40c8fcf, type: 3}
+  audio_SwordHit2: {fileID: 8300000, guid: b722dc5725fad1346965cdbb008730e9, type: 3}
 --- !u!50 &1720839895
 Rigidbody2D:
   serializedVersion: 4
