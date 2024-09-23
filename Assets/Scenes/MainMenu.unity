@@ -402,7 +402,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: b9bddf482baf73742a902f10d9746706, type: 3}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -902,6 +902,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   transitionImage: {fileID: 1225612158}
+  MainTheme: {fileID: 2047563297}
+  StartGameSound: {fileID: 8300000, guid: b9bddf482baf73742a902f10d9746706, type: 3}
 --- !u!1 &1976615578
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,11 +7,17 @@ using System.Collections;
 public class MainMenuButton : MonoBehaviour
 {  
     public Image transitionImage;
-    private float transitionDuration = 0.5f;
+    public AudioSource MainTheme;
+    public AudioClip StartGameSound;
+    private float transitionDuration = 2f;
+    private AudioSource audioSource;
 
-    // This method will be called when the button is clicked
+
     public void LoadGameScene()
     {
+        audioSource = gameObject.AddComponent<AudioSource>();
+        MainTheme.Stop();
+        audioSource.PlayOneShot(StartGameSound);
         transitionImage.transform.SetAsLastSibling();
         StartCoroutine(FadeAndLoadScene());
     }
