@@ -334,7 +334,6 @@ public class PlayerMovement : MonoBehaviour
                     characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
                     characterBody.AddForce(Vector2.right * knockbackAmount, ForceMode2D.Impulse);
                 }
-
                 lastHitTime = Time.time;
                 animator.SetFloat("isHit", 1);
             }
