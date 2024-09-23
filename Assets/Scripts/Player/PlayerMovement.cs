@@ -45,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
     public AudioClip audio_Potion;
     public AudioClip audio_SwordHit1;  
     public AudioClip audio_SwordHit2;  
+    public AudioClip audio_Death;
 
     // General Variables
     private bool playerDead = false;
@@ -81,7 +82,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Stop Sound if Idle
-        if (characterBody.velocity == Vector2.zero && animator.GetCurrentAnimatorStateInfo(0).IsName("player_Idle"))
+        if (characterBody.velocity == Vector2.zero && animator.GetCurrentAnimatorStateInfo(0).IsName("player_Idle") &&!playerDead)
         {
             soundManager.Stop();
         }
@@ -142,6 +143,7 @@ public class PlayerMovement : MonoBehaviour
             if (!playedDeathAnimation)
             {
                 soundManager.Stop();
+                soundManager.PlayOneShot(audio_Death);
                 StartCoroutine(PlayDeathAnimation());
             }
             playedDeathAnimation = true;
@@ -392,7 +394,6 @@ public class PlayerMovement : MonoBehaviour
         soundManager.PlayOneShot(clip);
     }
 
-
     private IEnumerator PlayDeathAnimation()
     {
         float elapsedTime = 0f;
@@ -409,29 +410,23 @@ public class PlayerMovement : MonoBehaviour
         }
 
         TransitionImage.gameObject.SetActive(true);
+        Deathscreen.gameObject.SetActive(true);
 
-        StartCoroutine(PlayDeathAnimation2(3f));
-
-    }
-    
-    private IEnumerator PlayDeathAnimation2(float duration)
-    {
-        Debug.Log("Waiting for seconds " + Time.time);
-        yield return new WaitForSeconds(duration);
-        Debug.Log("Done waiting " + Time.time);
-        float elapsedTime = 0f;
-        Color color = TransitionImage.color;
+        yield return new WaitForSeconds(2f);
+        elapsedTime = 0f;
+        color = TransitionImage.color;
         color.a = 0f; // Start with transparent
         TransitionImage.color = color;
+        Color deathscreenColor = Deathscreen.color; 
         float originalYoudiedA = Deathscreen.color.a;
         while (elapsedTime < transitionDuration)
         {
             elapsedTime += Time.deltaTime;
             float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
             TransitionImage.color = new Color(color.r, color.g, color.b, alpha);
-            Deathscreen.color = new Color(color.r, color.g, color.b, originalYoudiedA-alpha);
+            Deathscreen.color = new Color(deathscreenColor.r, deathscreenColor.g, deathscreenColor.b, originalYoudiedA-alpha);
+            Debug.Log(Deathscreen.color);
             yield return null;
         }
-        SceneManager.LoadScene("MainMenu");
     }
 }

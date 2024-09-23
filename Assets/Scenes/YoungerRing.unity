@@ -2973,6 +2973,7 @@ MonoBehaviour:
   audio_Potion: {fileID: 8300000, guid: 166541c8e573e954b8a33d2cddbdea84, type: 3}
   audio_SwordHit1: {fileID: 8300000, guid: f684845500e1b1f4380b37a8d40c8fcf, type: 3}
   audio_SwordHit2: {fileID: 8300000, guid: b722dc5725fad1346965cdbb008730e9, type: 3}
+  audio_Death: {fileID: 8300000, guid: 7ee3f5e6cea591c41a805ee84fb2f54d, type: 3}
 --- !u!50 &1720839895
 Rigidbody2D:
   serializedVersion: 4
