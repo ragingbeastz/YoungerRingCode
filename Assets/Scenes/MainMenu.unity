@@ -266,6 +266,7 @@ GameObject:
   - component: {fileID: 333892844}
   - component: {fileID: 333892843}
   - component: {fileID: 333892842}
+  - component: {fileID: 333892846}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -348,12 +349,12 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1225612160}
   - {fileID: 1487708019}
   - {fileID: 1976615579}
   - {fileID: 293230671}
   - {fileID: 1831394596}
   - {fileID: 1314534692}
+  - {fileID: 1225612160}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -361,6 +362,20 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &333892846
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 333892841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b678594d9adf91f468d5b9c81d920248, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fadeImage: {fileID: 1225612158}
+  fadeDuration: 2
 --- !u!1 &505103390
 GameObject:
   m_ObjectHideFlags: 0
@@ -612,7 +627,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

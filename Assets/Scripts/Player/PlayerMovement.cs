@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.UIElements;
 using System.Runtime.CompilerServices;
 using Unity.PlasticSCM.Editor.WebApi;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class PlayerMovement : MonoBehaviour
@@ -30,6 +31,9 @@ public class PlayerMovement : MonoBehaviour
     public UnityEngine.UI.Image tempHealthBar;
     public SpriteRenderer spriteRenderer;
     public TextMeshProUGUI potionsLeftText;
+    public UnityEngine.UI.Image Deathscreen;
+    public UnityEngine.UI.Image TransitionImage;
+
     Color originalColor;
     
     //Sounds
@@ -56,6 +60,8 @@ public class PlayerMovement : MonoBehaviour
     private bool isKnockedBack = false;
     private string groundLayer = "Floor"; 
     private float yVelocity;
+    private float transitionDuration = 4f;
+    private bool playedDeathAnimation = false;
 
 
     void Start()
@@ -133,7 +139,12 @@ public class PlayerMovement : MonoBehaviour
         {
             playerDead = true;
             animator.SetFloat("isDead", 1);
-            StartCoroutine(AllowForAnimationDeath());
+            if (!playedDeathAnimation)
+            {
+                soundManager.Stop();
+                StartCoroutine(PlayDeathAnimation());
+            }
+            playedDeathAnimation = true;
         }
 
         //Player Potions
@@ -381,5 +392,46 @@ public class PlayerMovement : MonoBehaviour
         soundManager.PlayOneShot(clip);
     }
 
-}
 
+    private IEnumerator PlayDeathAnimation()
+    {
+        float elapsedTime = 0f;
+        Color color = Deathscreen.color;
+        color.a = 0f; // Start with transparent
+        Deathscreen.color = color;
+
+        while (elapsedTime < transitionDuration && Deathscreen.color.a != 1f)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
+            Deathscreen.color = new Color(color.r, color.g, color.b, alpha);
+            yield return null;
+        }
+
+        TransitionImage.gameObject.SetActive(true);
+
+        StartCoroutine(PlayDeathAnimation2(3f));
+
+    }
+    
+    private IEnumerator PlayDeathAnimation2(float duration)
+    {
+        Debug.Log("Waiting for seconds " + Time.time);
+        yield return new WaitForSeconds(duration);
+        Debug.Log("Done waiting " + Time.time);
+        float elapsedTime = 0f;
+        Color color = TransitionImage.color;
+        color.a = 0f; // Start with transparent
+        TransitionImage.color = color;
+        float originalYoudiedA = Deathscreen.color.a;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
+            TransitionImage.color = new Color(color.r, color.g, color.b, alpha);
+            Deathscreen.color = new Color(color.r, color.g, color.b, originalYoudiedA-alpha);
+            yield return null;
+        }
+        SceneManager.LoadScene("MainMenu");
+    }
+}

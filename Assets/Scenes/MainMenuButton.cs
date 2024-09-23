@@ -18,7 +18,7 @@ public class MainMenuButton : MonoBehaviour
         audioSource = gameObject.AddComponent<AudioSource>();
         MainTheme.Stop();
         audioSource.PlayOneShot(StartGameSound);
-        transitionImage.transform.SetAsLastSibling();
+        transitionImage.gameObject.SetActive(true);
         StartCoroutine(FadeAndLoadScene());
     }
 
@@ -26,12 +26,15 @@ public class MainMenuButton : MonoBehaviour
     {
         float elapsedTime = 0f;
         Color color = transitionImage.color;
+        color.a = 0f; // Start with transparent
+        transitionImage.color = color;
 
         while (elapsedTime < transitionDuration)
         {
             elapsedTime += Time.deltaTime;
             float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
             transitionImage.color = new Color(color.r, color.g, color.b, alpha);
+            Debug.Log(transitionImage.color);
             yield return null;
         }
 
