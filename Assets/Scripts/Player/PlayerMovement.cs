@@ -75,6 +75,14 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (animator.GetFloat("isRolling") == 1){
+            gameObject.layer = LayerMask.NameToLayer("rollingLayer");
+
+        }
+        else{
+            gameObject.layer = LayerMask.NameToLayer("Player");
+        }
+
         //Determine if still
         if ((characterBody.velocity == Vector2.zero || animator.GetCurrentAnimatorStateInfo(0).IsName("player_Idle")) && !isKnockedBack)
         {
@@ -435,7 +443,6 @@ public class PlayerMovement : MonoBehaviour
             float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
             TransitionImage.color = new Color(color.r, color.g, color.b, alpha);
             Deathscreen.color = new Color(deathscreenColor.r, deathscreenColor.g, deathscreenColor.b, originalYoudiedA-alpha);
-            Debug.Log(Deathscreen.color);
             yield return null;
         }
     }

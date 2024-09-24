@@ -16,6 +16,7 @@ public class Skeleton : Enemy
     {
         base.Start();
         canMove = false;
+        healthBarPosition = new Vector2(-0.21f, -7.5f);
 
         animator = GetComponent<Animator>();
         // Ensure AudioSource component is attached
@@ -52,7 +53,7 @@ public class Skeleton : Enemy
     {
         base.TakeDamage(damage, playerPosition);
         audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Orcs/OrcHit"));
+        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Skeletons/SkeletonHit"));
 
     }
 
@@ -72,7 +73,7 @@ public class Skeleton : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcAttack");
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Skeletons/BowDraw");
             if (hitClip == null)
             {
                 Debug.LogError("Failed to load audio clip");
@@ -90,21 +91,23 @@ public class Skeleton : Enemy
     }
 
     void ShootArrow(){
+        audioSource = GetComponent<AudioSource>();
+        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Skeletons/BowFire"));
+
         GameObject arrow = new GameObject("Arrow");
         arrow.transform.SetParent(transform);
         arrow.AddComponent<SpriteRenderer>();
         arrow.AddComponent<Rigidbody2D>();
         arrow.AddComponent<BoxCollider2D>();        
+
         //Sprite
         SpriteRenderer arrowSprite = arrow.GetComponent<SpriteRenderer>();
         arrow.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Enemies/Skeletons/Arrow");
 
         //Positioning
         if(isFacingRight){
-            Debug.Log("Skeleton Position: " + transform.position.x + " " + transform.position.y);
         arrow.transform.position = new Vector2(transform.position.x + 1.56f, transform.position.y - 0.35f);
         arrow.transform.rotation = Quaternion.Euler(0, 0, 9.6f);
-        Debug.Log("Arrow Position: " + arrow.transform.position.x + " " + arrow.transform.position.y);
         }
         else{
             arrow.transform.position = new Vector2(transform.position.x - 1.56f, transform.position.y - 0.35f);
@@ -127,6 +130,9 @@ public class Skeleton : Enemy
         }
 
         //Collisions
+        arrow.layer = LayerMask.NameToLayer("Enemy");
+        int rollingLayer = LayerMask.NameToLayer("rollingLayer");
+        Physics2D.IgnoreLayerCollision(arrow.layer, rollingLayer);
         BoxCollider2D arrowCollider = arrow.GetComponent<BoxCollider2D>();
         arrowCollider.size = new Vector2(0.4803897f, 0.05234949f);
         arrowCollider.offset = new Vector2(0.004857153f, -0.005216029f);
@@ -137,19 +143,22 @@ public class Skeleton : Enemy
     }
 
     class ArrowCollision : MonoBehaviour{
+
         void OnCollisionEnter2D(Collision2D collision){
-            if(collision.gameObject.layer == LayerMask.NameToLayer("Player")){
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+            {
             collision.gameObject.GetComponent<PlayerMovement>().DamagePlayer(0.1f, transform.position);
             Destroy(gameObject);
             }
 
-            if(collision.gameObject.layer == LayerMask.NameToLayer("Floor")){
+            if (collision.gameObject.layer == LayerMask.NameToLayer("Floor"))
+            {
             Rigidbody2D arrowBody = GetComponent<Rigidbody2D>();
             arrowBody.velocity = new Vector2(0, 0);
             arrowBody.bodyType = RigidbodyType2D.Kinematic;
             arrowBody.angularVelocity = 0;
             arrowBody.gravityScale = 0;
-            
+
             BoxCollider2D arrowCollider = GetComponent<BoxCollider2D>();
             arrowCollider.enabled = false; // Disable collision
             StartCoroutine(ArrowDestroy());

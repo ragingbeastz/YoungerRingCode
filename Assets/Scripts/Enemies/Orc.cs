@@ -14,6 +14,7 @@ public class Orc : Enemy
     {
         base.Start();
         animator = GetComponent<Animator>();
+        healthBarPosition = new Vector2(0.28f, -6.16f);
 
         // Ensure AudioSource component is attached
         if (GetComponent<AudioSource>() == null)

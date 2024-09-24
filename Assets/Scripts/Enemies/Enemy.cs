@@ -52,6 +52,7 @@ public abstract class Enemy : MonoBehaviour
     UnityEngine.UI.Image bgImage;
     UnityEngine.UI.Slider slider;
     GameObject sliderObject;
+    protected Vector2 healthBarPosition;
 
 
 
@@ -106,7 +107,7 @@ public abstract class Enemy : MonoBehaviour
 
             RectTransform bgImageRect = bgImageGameObject.GetComponent<RectTransform>();
             bgImageRect.sizeDelta = new Vector2(1.5f, 0.1f);
-            bgImageRect.anchoredPosition = new Vector2(0, -5.5f);
+            bgImageRect.anchoredPosition = healthBarPosition;
             bgImageRect.anchorMin = new Vector2(0.5f, 0.5f);
             bgImageRect.anchorMax = new Vector2(0.5f, 0.5f);
             bgImageRect.pivot = new Vector2(0.5f, 0.5f);
@@ -119,7 +120,7 @@ public abstract class Enemy : MonoBehaviour
 
             RectTransform healthBarRect = healthBarGameObject.GetComponent<RectTransform>();
             healthBarRect.sizeDelta = new Vector2(1.5f, 0.1f);
-            healthBarRect.anchoredPosition = new Vector2(0, -5.5f);
+            healthBarRect.anchoredPosition = healthBarPosition;
             healthBarRect.anchorMin = new Vector2(0.5f, 0.5f);
             healthBarRect.anchorMax = new Vector2(0.5f, 0.5f);
             healthBarRect.pivot = new Vector2(0.5f, 0.5f);
