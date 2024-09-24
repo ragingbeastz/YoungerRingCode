@@ -9,22 +9,37 @@ using Unity.VisualScripting;
 
 public abstract class Enemy : MonoBehaviour
 {
+    // Variables
+    private bool hasTakenDamage = false;
+    private Color originalColor = Color.white;
+    private bool scaleReachedZero = false;
+    private string groundLayer = "Floor";
+    private float lastMovement = 0f;
+
+    // Health
+    protected float health;
+    protected float maxHealth = 100;
+
+    // Player
     public GameObject Player;
+    protected PlayerMovement playerMovement;
+
+    // Movement
     protected int direction;
     protected float knockbackAmount = 5;
-    protected Rigidbody2D characterBody;
-    protected SpriteRenderer spriteRenderer;
-    protected bool isFacingRight = true;
     protected Vector2 velocity;
     protected int speed = 5;
     protected bool isGrounded;
-    private string groundLayer = "Floor";
     protected bool canMove = true;
-    private Color originalColor = Color.white;
-    protected PlayerMovement playerMovement;
-    protected bool isMoving = false;
+    protected bool isHit = false;
 
-    private float lastMovement = 0f;
+    // Components
+    protected Rigidbody2D characterBody;
+    protected SpriteRenderer spriteRenderer;
+    protected AudioSource audioSource;
+
+    // State
+    protected bool isFacingRight = true;
 
     //Health Bar
     GameObject canvasGameObject;
@@ -37,10 +52,7 @@ public abstract class Enemy : MonoBehaviour
     UnityEngine.UI.Image bgImage;
     UnityEngine.UI.Slider slider;
     GameObject sliderObject;
-    private bool hasTakenDamage = false;
-    protected float health;
-    protected float maxHealth = 100;
-    private bool scaleReachedZero = false;
+
 
 
 
@@ -51,6 +63,8 @@ public abstract class Enemy : MonoBehaviour
         characterBody = GetComponent<Rigidbody2D>();
         playerMovement = Player.GetComponent<PlayerMovement>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
+
 
 
         canvasGameObject = new GameObject("EnemyCanvas");
@@ -62,7 +76,8 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         FacePlayer();
-        if (canMove){
+        if (canMove && health > 0 && isGrounded)
+        {
             enemyMove();
         }
     }
@@ -72,6 +87,7 @@ public abstract class Enemy : MonoBehaviour
 
     public virtual void TakeDamage(int damage, Vector3 playerPosition)
     {
+        isHit = true;
         if (!hasTakenDamage)
         {
             hasTakenDamage = true;
@@ -90,7 +106,7 @@ public abstract class Enemy : MonoBehaviour
 
             RectTransform bgImageRect = bgImageGameObject.GetComponent<RectTransform>();
             bgImageRect.sizeDelta = new Vector2(1.5f, 0.1f);
-            bgImageRect.anchoredPosition = new Vector2(0, -1f);
+            bgImageRect.anchoredPosition = new Vector2(0, -5.5f);
             bgImageRect.anchorMin = new Vector2(0.5f, 0.5f);
             bgImageRect.anchorMax = new Vector2(0.5f, 0.5f);
             bgImageRect.pivot = new Vector2(0.5f, 0.5f);
@@ -103,7 +119,7 @@ public abstract class Enemy : MonoBehaviour
 
             RectTransform healthBarRect = healthBarGameObject.GetComponent<RectTransform>();
             healthBarRect.sizeDelta = new Vector2(1.5f, 0.1f);
-            healthBarRect.anchoredPosition = new Vector2(0, -1f);
+            healthBarRect.anchoredPosition = new Vector2(0, -5.5f);
             healthBarRect.anchorMin = new Vector2(0.5f, 0.5f);
             healthBarRect.anchorMax = new Vector2(0.5f, 0.5f);
             healthBarRect.pivot = new Vector2(0.5f, 0.5f);
@@ -124,9 +140,6 @@ public abstract class Enemy : MonoBehaviour
 
         healthBarImage.fillAmount = healthPercentage;
 
-
-
-
         if (health <= 0)
         {
             if (scaleReachedZero)
@@ -135,10 +148,9 @@ public abstract class Enemy : MonoBehaviour
             }
             else
             {
-                StartCoroutine(ReduceScaleOverTime(0.5f)); // Reduce scale over 1 second
+                StartCoroutine(ReduceAlphaOverTime(2f)); // Reduce scale over 1 second
             }
         }
-
 
         spriteRenderer.color = Color.red;
         float playerPositionX = playerPosition.x;
@@ -150,12 +162,12 @@ public abstract class Enemy : MonoBehaviour
         if (playerPositionX >= enemyPositionX)
         {
             spriteRenderer.color = Color.red;
-            characterBody.AddForce(Vector2.left * knockbackAmount*2, ForceMode2D.Impulse);
+            characterBody.AddForce(Vector2.left * knockbackAmount * 2, ForceMode2D.Impulse);
         }
         else
         {
             spriteRenderer.color = Color.red;
-            characterBody.AddForce(Vector2.right * knockbackAmount*2, ForceMode2D.Impulse);
+            characterBody.AddForce(Vector2.right * knockbackAmount * 2, ForceMode2D.Impulse);
         }
 
     }
@@ -173,6 +185,12 @@ public abstract class Enemy : MonoBehaviour
             isGrounded = true;
             spriteRenderer = GetComponent<SpriteRenderer>();
             spriteRenderer.color = Color.white;
+
+            if (isHit)
+            {
+                isHit = false;
+                characterBody.velocity = new Vector2(0, 0);
+            }
         }
     }
 
@@ -240,7 +258,6 @@ public abstract class Enemy : MonoBehaviour
         if ((transform.position.x - Player.transform.position.x) >= 0.5 || (transform.position.x - Player.transform.position.x) <= -0.5
         && Mathf.Abs(transform.position.x - Player.transform.position.x) <= 10)
         {
-            isMoving = true;
             if (isFacingRight)
             {
                 transform.Translate(Vector2.right * speed * Time.deltaTime);
@@ -251,33 +268,27 @@ public abstract class Enemy : MonoBehaviour
                 transform.Translate(Vector2.left * speed * Time.deltaTime);
             }
             newPosition = transform.position.x;
-        }
-
-        if (lastPosition == newPosition)
-        {
-            isMoving = false;
-        }
-        else
-        {
-            isMoving = true;
+        
         }
     }
 
-    private IEnumerator ReduceScaleOverTime(float duration)
+    private IEnumerator ReduceAlphaOverTime(float duration)
     {
-        Vector3 initialScale = transform.localScale;
-        Vector3 targetScale = Vector3.zero;
+        characterBody.velocity = new Vector2(0, 0);
+        transform.position = new Vector2(transform.position.x, transform.position.y);
+        characterBody.bodyType = RigidbodyType2D.Kinematic; 
+        Color initialColor = spriteRenderer.color;
         float elapsedTime = 0f;
 
         while (elapsedTime < duration)
         {
-            transform.localScale = Vector3.Lerp(initialScale, targetScale, elapsedTime / duration);
+            float alpha = Mathf.Lerp(initialColor.a, 0, elapsedTime / duration);
+            spriteRenderer.color = new Color(initialColor.r, initialColor.g, initialColor.b, alpha);
             elapsedTime += Time.deltaTime;
             yield return null;
         }
 
-        transform.localScale = targetScale;
-        scaleReachedZero = true;
+        spriteRenderer.color = new Color(initialColor.r, initialColor.g, initialColor.b, 0);
         Die();
     }
 
