@@ -2089,6 +2089,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Player: {fileID: 1720839892}
+  Player: {fileID: 1720839892}
   animator: {fileID: 1340215208}
   bounceAmount: 5
 --- !u!95 &1340215208

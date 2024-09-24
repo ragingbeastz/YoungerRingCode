@@ -7,13 +7,18 @@ using System.IO;
 
 public class Enemy : MonoBehaviour
 {
+    public GameObject Player;
+    private int direction;
+    protected float knockbackAmount = 5;
     protected Rigidbody2D characterBody;
     protected Vector2 velocity;
     protected int speed = 100;
     protected bool isGrounded;
     private SpriteRenderer spriteRenderer;
     private string groundLayer = "Floor";
+    protected bool canMove = true;
     private Color originalColor = Color.white;
+    protected PlayerMovement playerMovement;
 
     //Health Bar
     GameObject canvasGameObject;
@@ -36,6 +41,7 @@ public class Enemy : MonoBehaviour
         health = maxHealth;
         velocity = new Vector2(speed, speed);
         characterBody = GetComponent<Rigidbody2D>();
+        playerMovement = Player.GetComponent<PlayerMovement>();
 
 
         canvasGameObject = new GameObject("EnemyCanvas");
@@ -46,7 +52,11 @@ public class Enemy : MonoBehaviour
 
     protected virtual void Update()
     {
-
+        FacePlayer();
+        if (canMove)
+        {
+            enemyMove();
+        }
     }
 
 
@@ -118,16 +128,16 @@ public class Enemy : MonoBehaviour
         float enemyPositionX = transform.position.x;
 
         Rigidbody2D characterBody = GetComponent<Rigidbody2D>();
-        characterBody.AddForce(Vector2.up * 5, ForceMode2D.Impulse);
+        characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
         if (playerPositionX >= enemyPositionX)
         {
             spriteRenderer.color = Color.red;
-            characterBody.AddForce(Vector2.left * 10, ForceMode2D.Impulse);
+            characterBody.AddForce(Vector2.left * knockbackAmount , ForceMode2D.Impulse);
         }
         else
         {
             spriteRenderer.color = Color.red;
-            characterBody.AddForce(Vector2.right * 10, ForceMode2D.Impulse);
+            characterBody.AddForce(Vector2.right * knockbackAmount, ForceMode2D.Impulse);
         }
 
     }
@@ -169,6 +179,39 @@ public class Enemy : MonoBehaviour
             Debug.LogError("File not found: " + path);
             return null;
         }
+    }
+
+    void FacePlayer(){
+        //Make Direction of travel towards player
+        if (Player != null)
+        {
+            Vector2 PlayerPosition = Player.transform.position;
+            Vector2 EnemyyPosition = transform.position;
+
+            float PlayerX = PlayerPosition.x;
+            float PlayerY = PlayerPosition.x;
+            float EnemyX = EnemyyPosition.x;
+            float EnemyY = EnemyyPosition.x;
+
+            //Rightward Direction
+            if (PlayerX >= EnemyX){
+                direction = 1;
+            }
+            //Leftward Direction
+            else{
+                direction = -1;
+            }
+        }
+    }
+
+    void enemyMove(){
+
+            if(direction == 1){
+                characterBody.AddForce(Vector2.right * speed, ForceMode2D.Impulse);
+            }
+            else{
+                characterBody.AddForce(Vector2.left * speed, ForceMode2D.Impulse);
+            }
     }
 
 }
