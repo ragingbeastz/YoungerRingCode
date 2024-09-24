@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 public class SquareMovement : Enemy
 {
     public Animator animator;
-    private float lastMovement = 0f;
+    protected float lastMovement = 0f;
     private float lastHit = 0f;
     private bool touchingPlayer = false;
     public int bounceAmount = 5;

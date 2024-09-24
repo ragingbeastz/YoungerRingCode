@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.Timeline;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -266,7 +267,16 @@ public class PlayerMovement : MonoBehaviour
                     {
                         if (enemy.CompareTag("Enemy")) // Ensure your enemy GameObjects have the "Enemy" tag
                         {
-                            enemy.GetComponent<Enemy>().TakeDamage(30,transform.position);
+                            if(enemy.GetComponent<Rigidbody2D>().transform.position.x - characterBody.position.x >= 0
+                            &&isLookingRight)
+                            {
+                                enemy.GetComponent<Enemy>().TakeDamage(30,transform.position);
+                            }
+
+                            else if(enemy.GetComponent<Rigidbody2D>().transform.position.x - characterBody.position.x < 0
+                            &&!isLookingRight){
+                                enemy.GetComponent<Enemy>().TakeDamage(30,transform.position);
+                            }
                         }
                     }
 
