@@ -161,13 +161,8 @@ public class Skeleton : Enemy
 
             BoxCollider2D arrowCollider = GetComponent<BoxCollider2D>();
             arrowCollider.enabled = false; // Disable collision
-            StartCoroutine(ArrowDestroy());
-            }
-        }
-
-        IEnumerator ArrowDestroy(){
-            yield return new WaitForSeconds(3f);
             Destroy(gameObject);
+            }
         }
     }
 }
