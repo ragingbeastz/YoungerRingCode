@@ -4,21 +4,27 @@ using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 using System.IO;
+using UnityEngine.UIElements;
+using Unity.VisualScripting;
 
-public class Enemy : MonoBehaviour
+public abstract class Enemy : MonoBehaviour
 {
     public GameObject Player;
-    private int direction;
+    protected int direction;
     protected float knockbackAmount = 5;
     protected Rigidbody2D characterBody;
+    protected SpriteRenderer spriteRenderer;
+    protected bool isFacingRight = true;
     protected Vector2 velocity;
-    protected int speed = 100;
+    protected int speed = 5;
     protected bool isGrounded;
-    private SpriteRenderer spriteRenderer;
     private string groundLayer = "Floor";
     protected bool canMove = true;
     private Color originalColor = Color.white;
     protected PlayerMovement playerMovement;
+    protected bool isMoving = false;
+
+    private float lastMovement = 0f;
 
     //Health Bar
     GameObject canvasGameObject;
@@ -27,13 +33,15 @@ public class Enemy : MonoBehaviour
     GameObject healthBarRectangleGameObject;
     GameObject sliderGameObject;
     Canvas canvas;
-    Image healthBarImage;
-    Image bgImage;
-    Slider slider;
+    UnityEngine.UI.Image healthBarImage;
+    UnityEngine.UI.Image bgImage;
+    UnityEngine.UI.Slider slider;
     GameObject sliderObject;
     private bool hasTakenDamage = false;
     protected float health;
     protected float maxHealth = 100;
+    private bool scaleReachedZero = false;
+
 
 
     protected virtual void Start()
@@ -42,23 +50,24 @@ public class Enemy : MonoBehaviour
         velocity = new Vector2(speed, speed);
         characterBody = GetComponent<Rigidbody2D>();
         playerMovement = Player.GetComponent<PlayerMovement>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
 
 
         canvasGameObject = new GameObject("EnemyCanvas");
         canvas = canvasGameObject.AddComponent<Canvas>();
         canvasGameObject.transform.SetParent(transform);
-        canvasGameObject.transform.localPosition = new Vector3(0, 2, 0); 
+        canvasGameObject.transform.localPosition = new Vector3(0, 2, 0);
     }
 
     protected virtual void Update()
     {
         FacePlayer();
-        if (canMove)
-        {
+        if (canMove){
             enemyMove();
         }
     }
 
+    public abstract void AttackPlayer();
 
 
     public virtual void TakeDamage(int damage, Vector3 playerPosition)
@@ -80,11 +89,11 @@ public class Enemy : MonoBehaviour
             bgImage = bgImageGameObject.AddComponent<UnityEngine.UI.Image>();
 
             RectTransform bgImageRect = bgImageGameObject.GetComponent<RectTransform>();
-            bgImageRect.sizeDelta = new Vector2(1.5f, 0.1f); 
-            bgImageRect.anchoredPosition = new Vector2(0, -1f);  
-            bgImageRect.anchorMin = new Vector2(0.5f, 0.5f); 
-            bgImageRect.anchorMax = new Vector2(0.5f, 0.5f);  
-            bgImageRect.pivot = new Vector2(0.5f, 0.5f);     
+            bgImageRect.sizeDelta = new Vector2(1.5f, 0.1f);
+            bgImageRect.anchoredPosition = new Vector2(0, -1f);
+            bgImageRect.anchorMin = new Vector2(0.5f, 0.5f);
+            bgImageRect.anchorMax = new Vector2(0.5f, 0.5f);
+            bgImageRect.pivot = new Vector2(0.5f, 0.5f);
 
             bgImage.sprite = sprite;
             bgImage.color = Color.black;
@@ -93,18 +102,18 @@ public class Enemy : MonoBehaviour
             healthBarImage = healthBarGameObject.AddComponent<UnityEngine.UI.Image>();
 
             RectTransform healthBarRect = healthBarGameObject.GetComponent<RectTransform>();
-            healthBarRect.sizeDelta = new Vector2(1.5f, 0.1f); 
-            healthBarRect.anchoredPosition = new Vector2(0, -1f);  
-            healthBarRect.anchorMin = new Vector2(0.5f, 0.5f); 
-            healthBarRect.anchorMax = new Vector2(0.5f, 0.5f);  
-            healthBarRect.pivot = new Vector2(0.5f, 0.5f);     
-           
+            healthBarRect.sizeDelta = new Vector2(1.5f, 0.1f);
+            healthBarRect.anchoredPosition = new Vector2(0, -1f);
+            healthBarRect.anchorMin = new Vector2(0.5f, 0.5f);
+            healthBarRect.anchorMax = new Vector2(0.5f, 0.5f);
+            healthBarRect.pivot = new Vector2(0.5f, 0.5f);
+
             healthBarImage.sprite = sprite;
             healthBarImage.color = Color.red;
-            healthBarImage.type = Image.Type.Filled;
-            healthBarImage.fillMethod = Image.FillMethod.Horizontal;
-            healthBarImage.fillOrigin = 0; 
-            healthBarImage.fillAmount = 1f;  
+            healthBarImage.type = UnityEngine.UI.Image.Type.Filled;
+            healthBarImage.fillMethod = UnityEngine.UI.Image.FillMethod.Horizontal;
+            healthBarImage.fillOrigin = 0;
+            healthBarImage.fillAmount = 1f;
         }
 
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -120,24 +129,33 @@ public class Enemy : MonoBehaviour
 
         if (health <= 0)
         {
-            Die();
+            if (scaleReachedZero)
+            {
+                Die();
+            }
+            else
+            {
+                StartCoroutine(ReduceScaleOverTime(0.5f)); // Reduce scale over 1 second
+            }
         }
+
 
         spriteRenderer.color = Color.red;
         float playerPositionX = playerPosition.x;
         float enemyPositionX = transform.position.x;
 
-        Rigidbody2D characterBody = GetComponent<Rigidbody2D>();
+        characterBody.velocity = new Vector2(0, 0);
+
         characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
         if (playerPositionX >= enemyPositionX)
         {
             spriteRenderer.color = Color.red;
-            characterBody.AddForce(Vector2.left * knockbackAmount , ForceMode2D.Impulse);
+            characterBody.AddForce(Vector2.left * knockbackAmount*2, ForceMode2D.Impulse);
         }
         else
         {
             spriteRenderer.color = Color.red;
-            characterBody.AddForce(Vector2.right * knockbackAmount, ForceMode2D.Impulse);
+            characterBody.AddForce(Vector2.right * knockbackAmount*2, ForceMode2D.Impulse);
         }
 
     }
@@ -171,7 +189,7 @@ public class Enemy : MonoBehaviour
         if (File.Exists(path))
         {
             byte[] fileData = File.ReadAllBytes(path);
-            Texture2D texture = new Texture2D(2, 2); 
+            Texture2D texture = new Texture2D(2, 2);
             return texture;
         }
         else
@@ -181,7 +199,8 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void FacePlayer(){
+    void FacePlayer()
+    {
         //Make Direction of travel towards player
         if (Player != null)
         {
@@ -189,29 +208,78 @@ public class Enemy : MonoBehaviour
             Vector2 EnemyyPosition = transform.position;
 
             float PlayerX = PlayerPosition.x;
-            float PlayerY = PlayerPosition.x;
             float EnemyX = EnemyyPosition.x;
-            float EnemyY = EnemyyPosition.x;
 
             //Rightward Direction
-            if (PlayerX >= EnemyX){
+            if (PlayerX >= EnemyX)
+            {
                 direction = 1;
+                if (!isFacingRight)
+                {
+                    isFacingRight = true;
+                    spriteRenderer.flipX = false;
+                }
             }
             //Leftward Direction
-            else{
+            else
+            {
                 direction = -1;
+                if (isFacingRight)
+                {
+                    isFacingRight = false;
+                    spriteRenderer.flipX = true;
+                }
             }
         }
     }
 
-    void enemyMove(){
+    void enemyMove()
+    {
+        float lastPosition = transform.position.x;
+        float newPosition = transform.position.x;
+        if ((transform.position.x - Player.transform.position.x) >= 0.5 || (transform.position.x - Player.transform.position.x) <= -0.5
+        && Mathf.Abs(transform.position.x - Player.transform.position.x) <= 10)
+        {
+            isMoving = true;
+            if (isFacingRight)
+            {
+                transform.Translate(Vector2.right * speed * Time.deltaTime);
 
-            if(direction == 1){
-                characterBody.AddForce(Vector2.right * speed, ForceMode2D.Impulse);
             }
-            else{
-                characterBody.AddForce(Vector2.left * speed, ForceMode2D.Impulse);
+            else
+            {
+                transform.Translate(Vector2.left * speed * Time.deltaTime);
             }
+            newPosition = transform.position.x;
+        }
+
+        if (lastPosition == newPosition)
+        {
+            isMoving = false;
+        }
+        else
+        {
+            isMoving = true;
+        }
     }
+
+    private IEnumerator ReduceScaleOverTime(float duration)
+    {
+        Vector3 initialScale = transform.localScale;
+        Vector3 targetScale = Vector3.zero;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < duration)
+        {
+            transform.localScale = Vector3.Lerp(initialScale, targetScale, elapsedTime / duration);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localScale = targetScale;
+        scaleReachedZero = true;
+        Die();
+    }
+
 
 }
