@@ -75,14 +75,14 @@ public class Wizard : Enemy
     {
         base.TakeDamage(damage, playerPosition);
         audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Orcs/OrcHit"));
+        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Wizards/Hurt"));
 
     }
 
     protected override void Die()
     {
         audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Orcs/OrcDeath"));
+        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Wizards/Hurt"));
         base.Die();
     }
 
@@ -97,7 +97,7 @@ public class Wizard : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcAttack");
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Wizards/Flame");
             if (hitClip == null)
             {
                 Debug.LogError("Failed to load audio clip");
@@ -126,7 +126,7 @@ public class Wizard : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcAttack");
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Wizards/Fireball");
             if (hitClip == null)
             {
                 Debug.LogError("Failed to load audio clip");
@@ -161,9 +161,6 @@ public class Wizard : Enemy
 
     private void ThrowFireball()
     {
-
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Skeletons/BowFire"));
 
         GameObject fireball = new GameObject("fireball");
         //fireball.transform.SetParent(transform);

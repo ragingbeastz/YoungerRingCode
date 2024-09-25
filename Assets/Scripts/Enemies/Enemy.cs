@@ -99,7 +99,9 @@ public abstract class Enemy : MonoBehaviour
             bgImageGameObject = new GameObject("BackgroundImage");
             bgImageGameObject.transform.SetParent(canvasGameObject.transform);
 
-            Texture2D texture = LoadTexture("C:\\Users\\Dimithri\\Desktop\\Coding\\YoungerRingCode\\Library\\PackageCache\\com.unity.2d.sprite@1.0.0\\Editor\\ObjectMenuCreation\\DefaultAssets\\Textures\\v2\\Square.png");
+            string texturePath = Path.Combine(Application.dataPath, "Library", "PackageCache", "com.unity.2d.sprite@1.0.0", "Editor", "ObjectMenuCreation", "DefaultAssets", "Textures", "v2", "Square.png").Replace("/", "\\");
+            texturePath = texturePath.Replace("Assets\\Library", "Library");
+            Texture2D texture = LoadTexture(texturePath);
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
             //Background Image
