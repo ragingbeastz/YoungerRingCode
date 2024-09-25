@@ -445,5 +445,7 @@ public class PlayerMovement : MonoBehaviour
             Deathscreen.color = new Color(deathscreenColor.r, deathscreenColor.g, deathscreenColor.b, originalYoudiedA-alpha);
             yield return null;
         }
+
+        SceneManager.LoadScene("MainMenu");
     }
 }
