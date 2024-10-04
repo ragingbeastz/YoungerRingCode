@@ -15,8 +15,8 @@ TagManager:
   - Enemy
   - Player
   - rollingLayer
-  - Decoration
-  - 
+  - Background
+  - TilemapDecorations
   - 
   - 
   - 
@@ -51,7 +51,10 @@ TagManager:
   - name: Floor
     uniqueID: 4200630039
     locked: 0
-  - name: Decoration
+  - name: TilemapDecorations
+    uniqueID: 3437424337
+    locked: 0
+  - name: Tilemap
     uniqueID: 3139381017
     locked: 0
   - name: Character

@@ -116,7 +116,11 @@ public class PlayerMovement : MonoBehaviour
         }
 
         yVelocity = characterBody.velocity.y;
-        animator.SetFloat("yVelocity", yVelocity);
+        if (yVelocity >= 1 || yVelocity <= -1 || yVelocity == 0)
+        {
+            animator.SetFloat("yVelocity", yVelocity);
+
+        }
 
         //Change direction of player
         if (!isLookingRight)
