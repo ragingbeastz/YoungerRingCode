@@ -14,7 +14,7 @@ public class Wizard : Enemy
     {
         base.Start();
         animator = GetComponent<Animator>();
-        healthBarPosition = new Vector2(0.28f, -6.16f);
+        healthBarPosition = new Vector2(-0.13f, -7.6f);
 
         // Ensure AudioSource component is attached
         if (GetComponent<AudioSource>() == null)
@@ -27,7 +27,10 @@ public class Wizard : Enemy
     void Update()
     {
         base.Update();
-        AttackPlayer();
+        if (activated)
+        {
+            AttackPlayer();
+        }
 
         float currentPosition = transform.position.x;
         float currentTime = Time.time;
@@ -40,6 +43,19 @@ public class Wizard : Enemy
         else
         {
             animator.SetFloat("isMoving", 0);
+        }
+
+        if (!isGrounded)
+        {
+            // Freeze the current sprite image
+            animator.speed = 0;
+            animator.enabled = false;
+        }
+        else
+        {
+            // Resume sprite animation
+            animator.speed = 1;
+            animator.enabled = true;
         }
 
     }
@@ -148,7 +164,7 @@ public class Wizard : Enemy
     {
 
         float playerDistanceFromEnemy = playerMovement.transform.position.x - transform.position.x;
-        if (isFacingRight && playerDistanceFromEnemy >= 0 && Math.Abs(playerDistanceFromEnemy) < 5)
+        if (isFacingRight && playerDistanceFromEnemy >= 0 && Math.Abs(playerDistanceFromEnemy) < 5 && playerMovement.transform.position.y - transform.position.y < 2)
         {
             playerMovement.DamagePlayer(0.3f, transform.position);
         }
@@ -171,8 +187,9 @@ public class Wizard : Enemy
         //Animation
         SpriteRenderer fireballSprite = fireball.GetComponent<SpriteRenderer>();
         fireball.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Enemies/Wizards/Fireball");
+        fireballSprite.sortingLayerName = "Projectiles";
         fireball.transform.localScale = new Vector3(1f, 1f, 1f);
-        
+
 
         //Positioning
         if (isFacingRight)
@@ -225,18 +242,20 @@ public class Wizard : Enemy
 
 }
 
-    class fireballCollision : MonoBehaviour{
-        
+class fireballCollision : MonoBehaviour
+{
 
-        void OnCollisionEnter2D(Collision2D collision){
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
-            {
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Player"))
+        {
             collision.gameObject.GetComponent<PlayerMovement>().DamagePlayer(0.1f, transform.position);
             Destroy(gameObject);
-            }
+        }
 
-            if (collision.gameObject.layer == LayerMask.NameToLayer("Floor"))
-            {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Floor"))
+        {
             Rigidbody2D fireballBody = GetComponent<Rigidbody2D>();
             fireballBody.velocity = new Vector2(0, 0);
             fireballBody.bodyType = RigidbodyType2D.Kinematic;
@@ -246,8 +265,8 @@ public class Wizard : Enemy
             BoxCollider2D fireballCollider = GetComponent<BoxCollider2D>();
             fireballCollider.enabled = false; // Disable collision
             Destroy(gameObject);
-            }
         }
-
-
     }
+
+
+}

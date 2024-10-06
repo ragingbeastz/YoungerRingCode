@@ -16,10 +16,11 @@ public class PlayerMovement : MonoBehaviour
     public int speed = 8;
     public float jumpAmount = 10;
     public float dodgeAmount = 10;
-    public float rollDuration = 1f; 
+    public float rollDuration = 1f;
     public float doubleTapTime = 0.3f;
     public float attackRange = 5.0f;
     public int potionsLeft = 5;
+    public bool invincible = false; 
 
     // Components
     private Rigidbody2D characterBody;
@@ -36,16 +37,16 @@ public class PlayerMovement : MonoBehaviour
     public UnityEngine.UI.Image TransitionImage;
 
     Color originalColor;
-    
+
     //Sounds
-    public AudioClip audio_Hurt;  
-    public AudioClip audio_Jump;  
-    public AudioClip audio_Land;  
-    public AudioClip audio_Running;  
-    public AudioClip audio_Roll;  
+    public AudioClip audio_Hurt;
+    public AudioClip audio_Jump;
+    public AudioClip audio_Land;
+    public AudioClip audio_Running;
+    public AudioClip audio_Roll;
     public AudioClip audio_Potion;
-    public AudioClip audio_SwordHit1;  
-    public AudioClip audio_SwordHit2;  
+    public AudioClip audio_SwordHit1;
+    public AudioClip audio_SwordHit2;
     public AudioClip audio_Death;
 
     // General Variables
@@ -60,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
     private float lastHitTime = 0f;
     private float lastTempHealthReduction = 0f;
     private bool isKnockedBack = false;
-    private string groundLayer = "Floor"; 
+    private string groundLayer = "Floor";
     private float yVelocity;
     private float transitionDuration = 4f;
     private bool playedDeathAnimation = false;
@@ -75,11 +76,13 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (animator.GetFloat("isRolling") == 1){
+        if (animator.GetFloat("isRolling") == 1)
+        {
             gameObject.layer = LayerMask.NameToLayer("rollingLayer");
 
         }
-        else{
+        else
+        {
             gameObject.layer = LayerMask.NameToLayer("Player");
         }
 
@@ -91,7 +94,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Stop Sound if Idle
-        if (characterBody.velocity == Vector2.zero && animator.GetCurrentAnimatorStateInfo(0).IsName("player_Idle") &&!playerDead)
+        if (characterBody.velocity == Vector2.zero && animator.GetCurrentAnimatorStateInfo(0).IsName("player_Idle") && !playerDead)
         {
             soundManager.Stop();
         }
@@ -136,11 +139,14 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Managing Temp HealthBar
-        if (tempHealthBar.fillAmount >= healthBar.fillAmount){
+        if (tempHealthBar.fillAmount >= healthBar.fillAmount)
+        {
             float currentTime = Time.time;
-            if ((currentTime - lastHitTime) >= 1f){
+            if ((currentTime - lastHitTime) >= 1f)
+            {
 
-                if ((currentTime - lastTempHealthReduction) >= 0.05f){
+                if ((currentTime - lastTempHealthReduction) >= 0.05f)
+                {
                     tempHealthBar.fillAmount -= 0.01f;
                     lastTempHealthReduction = currentTime;
                 }
@@ -276,21 +282,25 @@ public class PlayerMovement : MonoBehaviour
                 //Damage
                 Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange);
                 foreach (Collider2D enemy in hitEnemies)
+                {
+                    if (enemy.CompareTag("Enemy")) // Ensure your enemy GameObjects have the "Enemy" tag
                     {
-                        if (enemy.CompareTag("Enemy")) // Ensure your enemy GameObjects have the "Enemy" tag
+                        if (enemy.GetComponent<Rigidbody2D>().transform.position.x - characterBody.position.x >= 0
+                        && enemy.GetComponent<Rigidbody2D>().transform.position.y - characterBody.position.y < 2
+                        && isLookingRight)
                         {
-                            if(enemy.GetComponent<Rigidbody2D>().transform.position.x - characterBody.position.x >= 0
-                            &&isLookingRight)
-                            {
-                                enemy.GetComponent<Enemy>().TakeDamage(30,transform.position);
-                            }
+                            enemy.GetComponent<Enemy>().TakeDamage(30, transform.position);
+                        }
 
-                            else if(enemy.GetComponent<Rigidbody2D>().transform.position.x - characterBody.position.x < 0
-                            &&!isLookingRight){
-                                enemy.GetComponent<Enemy>().TakeDamage(30,transform.position);
-                            }
+                        else if (enemy.GetComponent<Rigidbody2D>().transform.position.x - characterBody.position.x < 0
+                                                    && enemy.GetComponent<Rigidbody2D>().transform.position.y - characterBody.position.y < 2
+
+                        && !isLookingRight)
+                        {
+                            enemy.GetComponent<Enemy>().TakeDamage(30, transform.position);
                         }
                     }
+                }
 
             }
 
@@ -298,7 +308,8 @@ public class PlayerMovement : MonoBehaviour
             //Moving Left
             if (Input.GetKey(KeyCode.A) && animator.GetFloat("isRolling") == 0)
             {
-                if (isGrounded && soundManager.isPlaying == false){
+                if (isGrounded && soundManager.isPlaying == false)
+                {
                     soundManager.PlayOneShot(audio_Running);
                 }
                 isLookingRight = false;
@@ -309,7 +320,8 @@ public class PlayerMovement : MonoBehaviour
             // Moving Right
             if (Input.GetKey(KeyCode.D) && animator.GetFloat("isRolling") == 0)
             {
-                if (isGrounded && soundManager.isPlaying == false){
+                if (isGrounded && soundManager.isPlaying == false)
+                {
                     soundManager.PlayOneShot(audio_Running);
                 }
                 isLookingRight = true;
@@ -373,7 +385,7 @@ public class PlayerMovement : MonoBehaviour
 
     public void DamagePlayer(float amount, Vector2 EnemyPosition, float knockbackAmount = 5f)
     {
-        if (animator.GetFloat("isRolling") != 1 && healthBar.fillAmount > 0)
+        if (animator.GetFloat("isRolling") != 1 && healthBar.fillAmount > 0 && !invincible)
         {
             soundManager.Stop();
             soundManager.PlayOneShot(audio_Hurt);
@@ -439,14 +451,14 @@ public class PlayerMovement : MonoBehaviour
         color = TransitionImage.color;
         color.a = 0f; // Start with transparent
         TransitionImage.color = color;
-        Color deathscreenColor = Deathscreen.color; 
+        Color deathscreenColor = Deathscreen.color;
         float originalYoudiedA = Deathscreen.color.a;
         while (elapsedTime < transitionDuration)
         {
             elapsedTime += Time.deltaTime;
             float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
             TransitionImage.color = new Color(color.r, color.g, color.b, alpha);
-            Deathscreen.color = new Color(deathscreenColor.r, deathscreenColor.g, deathscreenColor.b, originalYoudiedA-alpha);
+            Deathscreen.color = new Color(deathscreenColor.r, deathscreenColor.g, deathscreenColor.b, originalYoudiedA - alpha);
             yield return null;
         }
 

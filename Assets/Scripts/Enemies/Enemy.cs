@@ -6,6 +6,7 @@ using UnityEngine.UI;
 using System.IO;
 using UnityEngine.UIElements;
 using Unity.VisualScripting;
+using System;
 
 public abstract class Enemy : MonoBehaviour
 {
@@ -32,6 +33,7 @@ public abstract class Enemy : MonoBehaviour
     protected bool isGrounded;
     protected bool canMove = true;
     protected bool isHit = false;
+    protected bool activated = false;
 
     // Components
     protected Rigidbody2D characterBody;
@@ -77,10 +79,16 @@ public abstract class Enemy : MonoBehaviour
     protected virtual void Update()
     {
         FacePlayer();
-        if (canMove && health > 0 && isGrounded)
+        if (canMove && health > 0 && isGrounded && Math.Abs(Player.transform.position.x - transform.position.x) <= 35)
         {
+            activated = true;
             enemyMove();
         }
+        else
+        {
+            activated = false;
+        }
+        
     }
 
     public abstract void AttackPlayer();
@@ -133,6 +141,9 @@ public abstract class Enemy : MonoBehaviour
             healthBarImage.fillMethod = UnityEngine.UI.Image.FillMethod.Horizontal;
             healthBarImage.fillOrigin = 0;
             healthBarImage.fillAmount = 1f;
+
+            canvas.sortingLayerName = "HealthBars";
+
         }
 
         spriteRenderer = GetComponent<SpriteRenderer>();

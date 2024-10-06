@@ -27,7 +27,10 @@ public class Orc : Enemy
     void Update()
     {
         base.Update();
-        AttackPlayer();
+        if (activated)
+        {
+            AttackPlayer();
+        }
 
         float currentPosition = transform.position.x;
         float currentTime = Time.time;
@@ -42,6 +45,19 @@ public class Orc : Enemy
             animator.SetFloat("isMoving", 0);
         }
 
+        if (!isGrounded)
+        {
+            // Freeze the current sprite image
+            animator.speed = 0;
+            animator.enabled = false;
+        }
+        else
+        {
+            // Resume sprite animation
+            animator.speed = 1;
+            animator.enabled = true;
+        }
+
     }
 
     public override void AttackPlayer()
@@ -54,7 +70,7 @@ public class Orc : Enemy
         float currentHit = Time.time;
         if (currentHit - lastHit > 1f)
         {
-            if (Math.Abs(playerMovement.transform.position.x - transform.position.x) < 2)
+            if (Math.Abs(playerMovement.transform.position.x - transform.position.x) < 2 && Math.Abs(playerMovement.transform.position.y - transform.position.y) < 2)
             {
                 StartCoroutine(HitPlayer());
                 lastHit = Time.time;
@@ -71,7 +87,8 @@ public class Orc : Enemy
 
     }
 
-    protected override void Die(){
+    protected override void Die()
+    {
         audioSource = GetComponent<AudioSource>();
         audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Orcs/OrcDeath"));
         base.Die();

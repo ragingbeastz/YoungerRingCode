@@ -51,12 +51,21 @@ TagManager:
   - name: Floor
     uniqueID: 4200630039
     locked: 0
-  - name: TilemapDecorations
-    uniqueID: 3437424337
-    locked: 0
   - name: Tilemap
     uniqueID: 3139381017
     locked: 0
+  - name: TilemapDecorations
+    uniqueID: 3437424337
+    locked: 0
   - name: Character
     uniqueID: 1759128763
+    locked: 0
+  - name: Enemies
+    uniqueID: 3976429289
+    locked: 0
+  - name: Projectiles
+    uniqueID: 2133116287
+    locked: 0
+  - name: HealthBars
+    uniqueID: 3817820859
     locked: 0
