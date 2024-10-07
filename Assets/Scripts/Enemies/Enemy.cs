@@ -34,6 +34,7 @@ public abstract class Enemy : MonoBehaviour
     protected bool canMove = true;
     protected bool isHit = false;
     protected bool activated = false;
+    protected bool isBoss = false;
 
     // Components
     protected Rigidbody2D characterBody;
@@ -97,7 +98,7 @@ public abstract class Enemy : MonoBehaviour
     public virtual void TakeDamage(int damage, Vector3 playerPosition)
     {
         isHit = true;
-        if (!hasTakenDamage)
+        if (!hasTakenDamage && !isBoss)
         {
             hasTakenDamage = true;
 
