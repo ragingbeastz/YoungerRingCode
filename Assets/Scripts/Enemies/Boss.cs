@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 
 public class Boss : Enemy
@@ -27,10 +28,10 @@ public class Boss : Enemy
     void Update()
     {
         base.Update();
-        // if (activated)
-        // {
-        //     AttackPlayer();
-        // }
+        if (activated)
+        {
+            AttackPlayer();
+        }
 
         //Animations
         //Idle
@@ -43,7 +44,8 @@ public class Boss : Enemy
                 animator.SetFloat("isMoving", 0);
                 isIdle = true;
             }
-            else{
+            else
+            {
                 isIdle = false;
             }
             lastPosition = transform.position.x;
@@ -73,16 +75,28 @@ public class Boss : Enemy
         }
 
         float currentHit = Time.time;
-        if (currentHit - lastHit > 1f)
+        if (currentHit - lastHit > 3f)
         {
-            if (Math.Abs(playerMovement.transform.position.x - transform.position.x) < 2 && Math.Abs(playerMovement.transform.position.y - transform.position.y) < 2)
-            {
-                StartCoroutine(HitPlayer());
-                lastHit = Time.time;
-            }
-        }
 
+            int randInt = UnityEngine.Random.Range(1, 4);
+            if (randInt == 1)
+            {
+                StartCoroutine(Attack1());
+            }
+            else if (randInt == 2)
+            {
+                StartCoroutine(Attack2());
+            }
+            else if (randInt == 3)
+            {
+                StartCoroutine(Attack3());
+            }
+
+            lastHit = Time.time;
+
+        }
     }
+
 
     public override void TakeDamage(int damage, Vector3 playerPosition)
     {
@@ -91,7 +105,7 @@ public class Boss : Enemy
         audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Orcs/OrcHit"));
     }
 
-    private IEnumerator HitPlayer()
+    private IEnumerator Attack1()
     {
         canMove = false;
         audioSource = GetComponent<AudioSource>();
@@ -115,8 +129,74 @@ public class Boss : Enemy
 
         characterBody.velocity = new Vector2(0, characterBody.velocity.y);
         playerMovement.DamagePlayer(0.3f, transform.position);
-        yield return new WaitForSeconds(0.3f);
+        animator.SetFloat("isAttack1", 1);
+        yield return new WaitForSeconds(0.4f);
+        animator.SetFloat("isAttack1", 0);
+        yield return new WaitForSeconds(1f);
+        canMove = true;
+    }
+
+    private IEnumerator Attack2()
+    {
+        canMove = false;
+        audioSource = GetComponent<AudioSource>();
+
+        if (audioSource == null)
+        {
+            Debug.LogError("AudioSource component is missing on the Orc GameObject.");
+        }
+        else
+        {
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcAttack");
+            if (hitClip == null)
+            {
+                Debug.LogError("Failed to load audio clip");
+            }
+            else
+            {
+                audioSource.PlayOneShot(hitClip);
+            }
+        }
+
+        characterBody.velocity = new Vector2(0, characterBody.velocity.y);
+        playerMovement.DamagePlayer(0.3f, transform.position);
+        animator.SetFloat("isAttack2", 1);
+        yield return new WaitForSeconds(0.5f);
+        animator.SetFloat("isAttack2", 0);
+        yield return new WaitForSeconds(1f);
+        canMove = true;
+    }
+
+
+    private IEnumerator Attack3()
+    {
+        canMove = false;
+        audioSource = GetComponent<AudioSource>();
+
+        if (audioSource == null)
+        {
+            Debug.LogError("AudioSource component is missing on the Orc GameObject.");
+        }
+        else
+        {
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcAttack");
+            if (hitClip == null)
+            {
+                Debug.LogError("Failed to load audio clip");
+            }
+            else
+            {
+                audioSource.PlayOneShot(hitClip);
+            }
+        }
+
+        characterBody.velocity = new Vector2(0, characterBody.velocity.y);
+        playerMovement.DamagePlayer(0.3f, transform.position);
+        animator.SetFloat("isAttack3", 1);
+        yield return new WaitForSeconds(0.4f);
+        animator.SetFloat("isAttack3", 0);
         yield return new WaitForSeconds(1f);
         canMove = true;
     }
 }
+
