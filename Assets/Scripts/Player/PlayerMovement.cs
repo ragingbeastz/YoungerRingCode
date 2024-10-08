@@ -285,10 +285,6 @@ public class PlayerMovement : MonoBehaviour
                 {
                     if (enemy.CompareTag("Enemy")) // Ensure your enemy GameObjects have the "Enemy" tag
                     {
-                        Debug.Log("We hit " + enemy.name);
-                        Debug.Log("Player Position: " + transform.position);
-                        Debug.Log("Enemy Position: " + enemy.transform.position);
-                        Debug.Log("Difference: " + (enemy.transform.position - transform.position));
 
                         if (enemy.GetComponent<Rigidbody2D>().transform.position.x - characterBody.position.x >= 0
                         && enemy.GetComponent<Rigidbody2D>().transform.position.y - characterBody.position.y < 3

@@ -38,8 +38,7 @@ public class MainMenuButton : MonoBehaviour
             yield return null;
         }
 
-        SceneManager.LoadScene("YoungerRing");
+        SceneManager.LoadScene("MainLevel");
     }
-
 
 }

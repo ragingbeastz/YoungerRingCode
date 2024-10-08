@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Boss : Enemy
 {
@@ -14,6 +15,11 @@ public class Boss : Enemy
     private float lastHitTime = 0f;
     private float lastTempHealthReduction = 0f;
     private bool isIdle = false;
+    private bool invincible = false;
+    private float lastDamageTime = 0f;
+    private float transitionDuration = 2f;
+    public Image transitionImage;
+
     public Image healthBar;
     public Image tempHealthBar;    
 
@@ -35,6 +41,16 @@ public class Boss : Enemy
     void Update()
     {
         base.Update();
+        float currentTime = Time.time;
+        if (currentTime - lastDamageTime < 1.25f)
+        {
+            invincible = true;
+        }
+        else
+        {
+            invincible = false;
+        }
+
         if (activated)
         {
             AttackPlayer();
@@ -42,7 +58,7 @@ public class Boss : Enemy
 
         //Animations
         //Idle
-        float currentTime = Time.time;
+        currentTime = Time.time;
         if (currentTime - lastPositionTime > 0.1f)
         {
             if (lastPosition == transform.position.x)
@@ -122,35 +138,37 @@ public class Boss : Enemy
 
     public override void TakeDamage(int damage, Vector3 playerPosition)
     {
-        Debug.Log("Boss taking damage");
-        //base.TakeDamage(damage, playerPosition);
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Orcs/OrcHit"));
-        health -= damage;
-        if (health <= 0)
+        if (!invincible)
         {
-            StartCoroutine(Death());
-        }
-        else
-        {
-            float playerPositionX = playerPosition.x;
-            float enemyPositionX = transform.position.x;
-
-            characterBody.velocity = new Vector2(0, 0);
-
-            characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
-            if (playerPositionX >= enemyPositionX)
+            audioSource = GetComponent<AudioSource>();
+            audioSource.PlayOneShot(Resources.Load<AudioClip>("Enemies/Orcs/OrcHit"));
+            health -= damage;
+            if (health <= 0)
             {
-                spriteRenderer.color = Color.red;
-                characterBody.AddForce(Vector2.left * knockbackAmount * 2, ForceMode2D.Impulse);
+                StartCoroutine(Death());
             }
             else
             {
-                spriteRenderer.color = Color.red;
-                characterBody.AddForce(Vector2.right * knockbackAmount * 2, ForceMode2D.Impulse);
-            }
+                float playerPositionX = playerPosition.x;
+                float enemyPositionX = transform.position.x;
 
-            StartCoroutine(Hurt());
+                characterBody.velocity = new Vector2(0, 0);
+
+                characterBody.AddForce(Vector2.up * knockbackAmount, ForceMode2D.Impulse);
+                if (playerPositionX >= enemyPositionX)
+                {
+                    spriteRenderer.color = Color.red;
+                    characterBody.AddForce(Vector2.left * knockbackAmount * 2, ForceMode2D.Impulse);
+                }
+                else
+                {
+                    spriteRenderer.color = Color.red;
+                    characterBody.AddForce(Vector2.right * knockbackAmount * 2, ForceMode2D.Impulse);
+                }
+
+                StartCoroutine(Hurt());
+            }
+            lastDamageTime = Time.time;
         }
     }
 
@@ -165,7 +183,7 @@ public class Boss : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcHit");
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Hurt");
             if (hitClip == null)
             {
                 Debug.LogError("Failed to load audio clip");
@@ -194,7 +212,7 @@ public class Boss : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcDeath");
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Death");
             if (hitClip == null)
             {
                 Debug.LogError("Failed to load audio clip");
@@ -208,6 +226,8 @@ public class Boss : Enemy
         animator.SetFloat("isDead", 1);
         yield return new WaitForSeconds(1.5f);
         StartCoroutine(ReduceAlphaOverTime(5f));
+        yield return new WaitForSeconds(5f);
+        StartCoroutine(FadeAndLoadScene());
     }
 
 
@@ -228,7 +248,7 @@ public class Boss : Enemy
         }
 
         spriteRenderer.color = new Color(initialColor.r, initialColor.g, initialColor.b, 0);
-        Die();
+        //Die();
     }
 
     private IEnumerator Attack1()
@@ -242,7 +262,7 @@ public class Boss : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcAttack");
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Attack1");
             if (hitClip == null)
             {
                 Debug.LogError("Failed to load audio clip");
@@ -273,7 +293,7 @@ public class Boss : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcAttack");
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Attack2");
             if (hitClip == null)
             {
                 Debug.LogError("Failed to load audio clip");
@@ -305,7 +325,7 @@ public class Boss : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Orcs/OrcAttack");
+            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Attack3");
             if (hitClip == null)
             {
                 Debug.LogError("Failed to load audio clip");
@@ -323,6 +343,26 @@ public class Boss : Enemy
         animator.SetFloat("isAttack3", 0);
         yield return new WaitForSeconds(1f);
         canMove = true;
+    }
+
+    
+    private IEnumerator FadeAndLoadScene()
+    {
+        float elapsedTime = 0f;
+        Color color = transitionImage.color;
+        color.a = 0f; // Start with transparent
+        transitionImage.color = color;
+
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
+            transitionImage.color = new Color(color.r, color.g, color.b, alpha);
+            yield return null;
+        }
+        transitionImage.color = new Color(color.r, color.g, color.b, 1f); // Ensure it's fully visible at the end
+
+        SceneManager.LoadScene("MainMenu");
     }
 }
 
