@@ -5,6 +5,7 @@ using System.Data;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Diagnostics;
 
 public class Boss : Enemy
 {
@@ -21,7 +22,8 @@ public class Boss : Enemy
     public Image transitionImage;
 
     public Image healthBar;
-    public Image tempHealthBar;    
+    public Image tempHealthBar;
+    public GameObject player;
 
     // Start is called before the first frame update
     void Start()
@@ -113,7 +115,12 @@ public class Boss : Enemy
         }
 
         float currentHit = Time.time;
-        if (currentHit - lastHit > 3f)
+        float playerPositionX = player.transform.position.x;
+        float playerPositionY = player.transform.position.y;
+        float enemyPositionX = transform.position.x;
+        float enemyPositionY = transform.position.y;
+
+        if (currentHit - lastHit > 3f && canMove)
         {
 
             int randInt = UnityEngine.Random.Range(1, 4);
@@ -131,6 +138,12 @@ public class Boss : Enemy
             }
 
             lastHit = Time.time;
+
+            UnityEngine.Debug.Log("Attacking Player");
+            UnityEngine.Debug.Log("Player Position: " + playerPositionX + ", " + playerPositionY);
+            UnityEngine.Debug.Log("Enemy Position: " + enemyPositionX + ", " + enemyPositionY);
+            UnityEngine.Debug.Log("Distance: " + Mathf.Abs(playerPositionX - enemyPositionX) + ", " + Mathf.Abs(playerPositionY - enemyPositionY));
+
 
         }
     }
@@ -179,14 +192,14 @@ public class Boss : Enemy
 
         if (audioSource == null)
         {
-            Debug.LogError("AudioSource component is missing on the Orc GameObject.");
+            UnityEngine.Debug.LogError("AudioSource component is missing on the Orc GameObject.");
         }
         else
         {
             AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Hurt");
             if (hitClip == null)
             {
-                Debug.LogError("Failed to load audio clip");
+                UnityEngine.Debug.LogError("Failed to load audio clip");
             }
             else
             {
@@ -208,14 +221,14 @@ public class Boss : Enemy
 
         if (audioSource == null)
         {
-            Debug.LogError("AudioSource component is missing on the Orc GameObject.");
+            UnityEngine.Debug.LogError("AudioSource component is missing on the Orc GameObject.");
         }
         else
         {
             AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Death");
             if (hitClip == null)
             {
-                Debug.LogError("Failed to load audio clip");
+                UnityEngine.Debug.LogError("Failed to load audio clip");
             }
             else
             {
@@ -235,7 +248,7 @@ public class Boss : Enemy
     {
         characterBody.velocity = new Vector2(0, 0);
         transform.position = new Vector2(transform.position.x, transform.position.y);
-        characterBody.bodyType = RigidbodyType2D.Kinematic; 
+        characterBody.bodyType = RigidbodyType2D.Kinematic;
         Color initialColor = spriteRenderer.color;
         float elapsedTime = 0f;
 
@@ -258,14 +271,14 @@ public class Boss : Enemy
 
         if (audioSource == null)
         {
-            Debug.LogError("AudioSource component is missing on the Orc GameObject.");
+            UnityEngine.Debug.LogError("AudioSource component is missing on the Orc GameObject.");
         }
         else
         {
             AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Attack1");
             if (hitClip == null)
             {
-                Debug.LogError("Failed to load audio clip");
+                UnityEngine.Debug.LogError("Failed to load audio clip");
             }
             else
             {
@@ -274,7 +287,17 @@ public class Boss : Enemy
         }
 
         characterBody.velocity = new Vector2(0, characterBody.velocity.y);
-        playerMovement.DamagePlayer(0.3f, transform.position);
+
+        float playerPositionX = player.transform.position.x;
+        float playerPositionY = player.transform.position.y;
+        float enemyPositionX = transform.position.x;
+        float enemyPositionY = transform.position.y;
+
+        if (Mathf.Abs(playerPositionX - enemyPositionX) < 3 && Mathf.Abs(playerPositionY - enemyPositionY) < 5)
+        {
+            playerMovement.DamagePlayer(0.3f, transform.position);
+        }
+
         animator.SetFloat("isAttack1", 1);
         yield return new WaitForSeconds(0.4f);
         animator.SetFloat("isAttack1", 0);
@@ -289,14 +312,14 @@ public class Boss : Enemy
 
         if (audioSource == null)
         {
-            Debug.LogError("AudioSource component is missing on the Orc GameObject.");
+            UnityEngine.Debug.LogError("AudioSource component is missing on the Orc GameObject.");
         }
         else
         {
             AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Attack2");
             if (hitClip == null)
             {
-                Debug.LogError("Failed to load audio clip");
+                UnityEngine.Debug.LogError("Failed to load audio clip");
             }
             else
             {
@@ -305,7 +328,15 @@ public class Boss : Enemy
         }
 
         characterBody.velocity = new Vector2(0, characterBody.velocity.y);
-        playerMovement.DamagePlayer(0.3f, transform.position);
+        float playerPositionX = player.transform.position.x;
+        float playerPositionY = player.transform.position.y;
+        float enemyPositionX = transform.position.x;
+        float enemyPositionY = transform.position.y;
+
+        if (Mathf.Abs(playerPositionX - enemyPositionX) < 3 && Mathf.Abs(playerPositionY - enemyPositionY) < 5)
+        {
+            playerMovement.DamagePlayer(0.3f, transform.position);
+        }
         animator.SetFloat("isAttack2", 1);
         yield return new WaitForSeconds(0.5f);
         animator.SetFloat("isAttack2", 0);
@@ -321,14 +352,14 @@ public class Boss : Enemy
 
         if (audioSource == null)
         {
-            Debug.LogError("AudioSource component is missing on the Orc GameObject.");
+            UnityEngine.Debug.LogError("AudioSource component is missing on the Orc GameObject.");
         }
         else
         {
             AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Attack3");
             if (hitClip == null)
             {
-                Debug.LogError("Failed to load audio clip");
+                UnityEngine.Debug.LogError("Failed to load audio clip");
             }
             else
             {
@@ -337,7 +368,15 @@ public class Boss : Enemy
         }
 
         characterBody.velocity = new Vector2(0, characterBody.velocity.y);
-        playerMovement.DamagePlayer(0.3f, transform.position);
+        float playerPositionX = player.transform.position.x;
+        float playerPositionY = player.transform.position.y;
+        float enemyPositionX = transform.position.x;
+        float enemyPositionY = transform.position.y;
+
+        if (Mathf.Abs(playerPositionX - enemyPositionX) < 3 && Mathf.Abs(playerPositionY - enemyPositionY) < 5)
+        {
+            playerMovement.DamagePlayer(0.3f, transform.position);
+        }
         animator.SetFloat("isAttack3", 1);
         yield return new WaitForSeconds(0.4f);
         animator.SetFloat("isAttack3", 0);
@@ -345,7 +384,7 @@ public class Boss : Enemy
         canMove = true;
     }
 
-    
+
     private IEnumerator FadeAndLoadScene()
     {
         float elapsedTime = 0f;

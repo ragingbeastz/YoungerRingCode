@@ -9,6 +9,7 @@ public class PauseButton : MonoBehaviour
   public GameObject controlsMenu;
 
     public void OnClick(){
+        Debug.Log("Pause Button Clicked");
         pauseMenu.SetActive(!pauseMenu.activeSelf);
         if (controlsMenu.activeSelf)
         {
