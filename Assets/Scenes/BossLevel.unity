@@ -23894,7 +23894,7 @@ MonoBehaviour:
   doubleTapTime: 0.3
   attackRange: 3.5
   potionsLeft: 5
-  invincible: 1
+  invincible: 0
   animator: {fileID: 553057193}
   staminaBar: {fileID: 1633673027}
   healthBar: {fileID: 1996851917}
