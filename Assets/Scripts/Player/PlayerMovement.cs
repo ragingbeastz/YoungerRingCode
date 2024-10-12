@@ -279,9 +279,12 @@ public class PlayerMovement : MonoBehaviour
                 lastAttackTime = currentAttackTime;
 
                 //Damage
+
                 Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, attackRange);
+                Debug.Log("Detected these enemies: " + hitEnemies);
                 foreach (Collider2D enemy in hitEnemies)
                 {
+                    Debug.Log("We hit " + enemy.name);
                     if (enemy.CompareTag("Enemy")) // Ensure your enemy GameObjects have the "Enemy" tag
                     {
 
@@ -289,6 +292,7 @@ public class PlayerMovement : MonoBehaviour
                         && enemy.GetComponent<Rigidbody2D>().transform.position.y - characterBody.position.y < 3
                         && isLookingRight)
                         {
+                            Debug.Log("This Enemy is taking Damage: " + enemy.name);
                             enemy.GetComponent<Enemy>().TakeDamage(30, transform.position);
                         }
 

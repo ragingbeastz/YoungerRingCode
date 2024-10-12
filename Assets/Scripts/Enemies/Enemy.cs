@@ -108,9 +108,8 @@ public abstract class Enemy : MonoBehaviour
             bgImageGameObject = new GameObject("BackgroundImage");
             bgImageGameObject.transform.SetParent(canvasGameObject.transform);
 
-            string texturePath = Path.Combine(Application.dataPath, "Library", "PackageCache", "com.unity.2d.sprite@1.0.0", "Editor", "ObjectMenuCreation", "DefaultAssets", "Textures", "v2", "Square.png").Replace("/", "\\");
-            texturePath = texturePath.Replace("Assets\\Library", "Library");
-            Texture2D texture = LoadTexture(texturePath);
+
+            Texture2D texture = new Texture2D(2, 2);
             Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
 
             //Background Image
@@ -214,21 +213,6 @@ public abstract class Enemy : MonoBehaviour
         if (collision.gameObject.layer == LayerMask.NameToLayer(groundLayer))
         {
             isGrounded = false;
-        }
-    }
-
-    Texture2D LoadTexture(string path)
-    {
-        if (File.Exists(path))
-        {
-            byte[] fileData = File.ReadAllBytes(path);
-            Texture2D texture = new Texture2D(2, 2);
-            return texture;
-        }
-        else
-        {
-            Debug.LogError("File not found: " + path);
-            return null;
         }
     }
 
