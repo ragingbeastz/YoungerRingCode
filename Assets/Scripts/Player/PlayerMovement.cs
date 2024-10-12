@@ -5,7 +5,6 @@ using Unity.VisualScripting;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 using System.Runtime.CompilerServices;
-using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine.SceneManagement;
 using TMPro;
 using UnityEngine.Timeline;
