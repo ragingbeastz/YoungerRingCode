@@ -24,6 +24,8 @@ public class Boss : Enemy
     public Image healthBar;
     public Image tempHealthBar;
     public GameObject player;
+    public UnityEngine.UI.Image Deathscreen;
+    public AudioSource backgroundMusic;
 
     // Start is called before the first frame update
     void Start()
@@ -225,7 +227,8 @@ public class Boss : Enemy
         }
         else
         {
-            AudioClip hitClip = Resources.Load<AudioClip>("Enemies/Boss/Death");
+            AudioClip hitClip = Resources.Load<AudioClip>("game-start");
+            AudioClip WonGame = Resources.Load<AudioClip>("Enemies/Boss/Attack1");
             if (hitClip == null)
             {
                 UnityEngine.Debug.LogError("Failed to load audio clip");
@@ -233,6 +236,7 @@ public class Boss : Enemy
             else
             {
                 audioSource.PlayOneShot(hitClip);
+                audioSource.PlayOneShot(WonGame);
             }
         }
 
@@ -384,22 +388,39 @@ public class Boss : Enemy
         canMove = true;
     }
 
-
-    private IEnumerator FadeAndLoadScene()
+        private IEnumerator FadeAndLoadScene()
     {
         float elapsedTime = 0f;
-        Color color = transitionImage.color;
+        Color color = Deathscreen.color;
+        color.a = 0f; // Start with transparent
+        Deathscreen.color = color;
+
+        while (elapsedTime < transitionDuration && Deathscreen.color.a != 1f)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
+            Deathscreen.color = new Color(color.r, color.g, color.b, alpha);
+            yield return null;
+        }
+
+        transitionImage.gameObject.SetActive(true);
+        Deathscreen.gameObject.SetActive(true);
+
+        yield return new WaitForSeconds(2f);
+        elapsedTime = 0f;
+        color = transitionImage.color;
         color.a = 0f; // Start with transparent
         transitionImage.color = color;
-
+        Color deathscreenColor = Deathscreen.color;
+        float originalYoudiedA = Deathscreen.color.a;
         while (elapsedTime < transitionDuration)
         {
             elapsedTime += Time.deltaTime;
             float alpha = Mathf.Clamp01(elapsedTime / transitionDuration);
             transitionImage.color = new Color(color.r, color.g, color.b, alpha);
+            Deathscreen.color = new Color(deathscreenColor.r, deathscreenColor.g, deathscreenColor.b, originalYoudiedA - alpha);
             yield return null;
         }
-        transitionImage.color = new Color(color.r, color.g, color.b, 1f); // Ensure it's fully visible at the end
 
         SceneManager.LoadScene("MainMenu");
     }
